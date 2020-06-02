@@ -27,9 +27,12 @@ public class SaleServiceTest extends ServiceTest {
 	public void testSaveSale() {
 		Sale sale = new Sale();
 		sale.setBoId(SystemConstant.BOID_REQUIRED);
+		sale.setPayAmount(40000);
+		sale.setTotal(50000);
+		sale.getBalance();
 		sale.setSaleOrderList(new ArrayList<SaleOrder>());
 		try {
-			sale.setSaleDate(new SimpleDateFormat("yyyy-mm-dd").parse("2020-4-13"));
+			sale.setSaleDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-4-13"));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -41,15 +44,16 @@ public class SaleServiceTest extends ServiceTest {
 		sale.getSaleOrderList().add(saleOrder);
 		
 		Customer customer = new Customer();
-		customer.setId(3);
+		customer.setId(1);
 		sale.setCustomer(customer);
 		
 		User user = new User();
-		user.setId(2);
+		user.setId(1);
 		sale.setSaleBy(user);
 		
 		try {
 			saleService.SaveSale(sale);
+			logger.info("balance " + sale.getBalance());
 			logger.info("save!");
 		} catch (ServiceUnavailableException e) {
 			e.printStackTrace();

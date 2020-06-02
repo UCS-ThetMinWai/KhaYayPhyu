@@ -9,4 +9,5 @@ import com.khayayphyu.domain.exception.ServiceUnavailableException;
 public interface PriceService extends AbstractService<Price> {
 	public void savePrice(Price price)throws ServiceUnavailableException;
 	public List<Price> findByPeriod(Date stratDate, Date endDate)throws ServiceUnavailableException;
+	public List<Price> getAllPrice()throws ServiceUnavailableException;
 }

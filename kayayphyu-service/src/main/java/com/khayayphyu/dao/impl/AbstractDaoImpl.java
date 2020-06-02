@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.CannotCreateTransactionException;
 
 import com.khayayphyu.dao.AbstractDao;
+import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 
 public class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E, Serializable> {
@@ -52,7 +53,9 @@ public class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E
 
 	public List<E> findByString(String queryString, String data) {
 		List<E> entityList;
-		Query query = getCurrentSession().createQuery(queryString).setResultTransformer(RootEntityResultTransformer.INSTANCE).setParameter("dataInput", data);
+		Query query = getCurrentSession().createQuery(queryString).setResultTransformer(RootEntityResultTransformer.INSTANCE);
+		query.setParameter("dataInput", data);
+		query.setParameter("status", Status.DELETED);
 		entityList = query.list();
 		for (E entity : entityList)
 			Hibernate.initialize(entity);

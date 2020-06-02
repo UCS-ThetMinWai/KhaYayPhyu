@@ -1,6 +1,7 @@
 package com.khayayphyu.domain;
 
 import java.util.Date;
+import java.util.function.Supplier;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -66,6 +67,14 @@ public class Price extends AbstractEntity {
 	}
 	public void setDiscount(float discount) {
 		this.discount = discount;
+	}
+	
+	public static Price clonePrice(Price old, Supplier<String> boIdSupplier) {
+		Price price = new Price();
+		price.setBoId(boIdSupplier.get());
+		price.saleAmount = old.saleAmount;
+		price.date = old.date;
+		return price;
 	}
 	public String toString() {
 		return new ToStringBuilder(this)

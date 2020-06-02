@@ -3,6 +3,7 @@ package com.khayayphyu.service.impl;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.khayayphyu.dao.ProductDao;
 import com.khayayphyu.domain.Price;
 import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.RawProduct;
+import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.PriceService;
@@ -21,29 +23,30 @@ import com.khayayphyu.service.RawProductService;
 @Service("productService")
 @Transactional(readOnly = true)
 public class ProductServiceImpl extends AbstractServiceImpl<Product> implements ProductService {
-	
+	private Logger logger = Logger.getLogger(ProductServiceImpl.class);
+
 	@Autowired
 	private ProductDao productDao;
-	
+
 	@Autowired
 	private PriceService priceService;
-	
+
 	@Autowired
 	private RawProductService rawProductService;
-	
+
 	public void ensuredProductBoId(Product product) {
-		if(product.getPriceList() == null || product.getRawProduct() == null)
+		if (product.getPriceList() == null || product.getRawProduct() == null)
 			return;
-		if(CollectionUtils.isEmpty(product.getPriceList())) 
+		if (CollectionUtils.isEmpty(product.getPriceList()))
 			return;
 		for (Price price : product.getPriceList()) {
 			if (price.isBoIdRequired()) {
 				price.setBoId(priceService.getNextBoId(EntityType.PRICE));
 			}
 		}
-		
+
 		RawProduct rawProduct = product.getRawProduct();
-		if(rawProduct != null) {
+		if (rawProduct != null) {
 			rawProduct.setBoId(rawProductService.getNextBoId(EntityType.RAWPRODUCT));
 		}
 	}
@@ -51,36 +54,53 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 	@Transactional(readOnly = false)
 	@Override
 	public void saveProduct(Product product) throws ServiceUnavailableException {
-		if(product.isBoIdRequired()) {
-			product.setBoId(getNextBoId(EntityType.PRODUCT));
-			ensuredProductBoId(product);
+		if (product.isNew()) {
+			saveNewProduct(product);
+		} else {
+			saveExistingProduct(product);
 		}
-		productDao.save(product);
 	}
 
+	private void saveExistingProduct(Product product) throws ServiceUnavailableException {
+		Product oldProduct = findByBoId(product.getBoId());
+		if (product.isSamePrice(oldProduct)) {
+			productDao.save(product);
+		} else {
+			product.addPriceHistory(oldProduct.getCurrentPrice());
+			productDao.save(product);
+		}
+	}
+
+	private void saveNewProduct(Product product) throws ServiceUnavailableException {
+		product.setBoId(getNextBoId(EntityType.PRODUCT));
+		product.setStatus(Status.OPEN);
+		ensuredProductBoId(product);
+		productDao.save(product);
+	}
+	
 	@Override
 	public long getCount() {
 		return productDao.getCount("select count(product) from Product product");
 	}
-	
+
 	@Override
 	public List<Product> findByName(String name) throws ServiceUnavailableException {
-		String queryStr = "select product from Product product where product.productName=:dataInput";
-		List<Product> productList = productDao.findByString(queryStr, name);
-		if (CollectionUtils.isEmpty(productList))
-			return null;
-		 hibernateInitializeProductList(productList);
-		return productList;
-	}
-	
-	@Override
-	public List<Product> findByBoId(String boId) throws ServiceUnavailableException {
-		String queryStr = "select product from Product product where product.boId=:dataInput";
-		List<Product> productList = productDao.findByString(queryStr, boId);
+		String queryStr = "from Product product where product.productName like :dataInput and product.status != :status";
+		List<Product> productList = productDao.findByString(queryStr, "%" + name + "%");
 		if (CollectionUtils.isEmpty(productList))
 			return null;
 		hibernateInitializeProductList(productList);
 		return productList;
+	}
+
+	@Override
+	public Product findByBoId(String boId) throws ServiceUnavailableException {
+		String queryStr = "select product from Product product where product.boId=:dataInput and product.status != :status";
+		List<Product> productList = productDao.findByString(queryStr, boId);
+		if (CollectionUtils.isEmpty(productList))
+			return null;
+		hibernateInitializeProductList(productList);
+		return productList.get(0);
 	}
 
 	@Override
@@ -94,15 +114,30 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 		}
 	}
 
+	@Transactional(readOnly = false)
+	@Override
+	public void deleteProduct(Product product) throws ServiceUnavailableException {
+		product.setStatus(Status.DELETED);
+		saveProduct(product);
+	}
+
 	@Override
 	public void hibernateInitializeProduct(Product product) {
 		Hibernate.initialize(product);
-		if(product == null)
+		if (product == null)
 			return;
 		Hibernate.initialize(product.getRawProduct());
-		for(Price price : product.getPriceList()) {
+		for (Price price : product.getPriceList()) {
 			Hibernate.initialize(price);
 		}
+	}
+
+	@Override
+	public List<Product> getAllProduct() throws ServiceUnavailableException {
+		logger.info("here product");
+		List<Product> productList = productDao.getAll("From Product product");
+		hibernateInitializeProductList(productList);
+		return productList;
 	}
 
 }

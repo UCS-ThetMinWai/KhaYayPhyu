@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.khayayphyu.domain.Customer;
+import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.CustomerService;
@@ -23,8 +24,8 @@ public class CustomerServiceTest extends ServiceTest {
 		customer.setBoId(SystemConstant.BOID_REQUIRED);
 		customer.setName("Myo Thura");
 		customer.setAge(27);
+		customer.setStatus(Status.ACTIVE);
 		customer.setAddress("Kyun Ywar");
-		customer.setEmailAddress("soeminhtun555@Gmail.com");
 		customer.setPhoneNumber("09684876787");
 		try {
 			customerService.saveCustomer(customer);
@@ -51,11 +52,8 @@ public class CustomerServiceTest extends ServiceTest {
 	@Test
 	public void testFindByBoId() {
 		try {
-			List<Customer> customerList = customerService.findByBoId("CUSTOMER00000002");
-			for(Customer customer : customerList) {
-	
-				logger.info(customer);
-			}
+			Customer customerList = customerService.findByBoId("CUSTOMER00000002");
+			logger.info(customerList);
 
 		} catch (ServiceUnavailableException e) {
 			logger.info("Error is:::" + e);

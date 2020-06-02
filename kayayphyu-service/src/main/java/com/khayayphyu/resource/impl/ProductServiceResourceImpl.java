@@ -34,16 +34,29 @@ public class ProductServiceResourceImpl extends AbstractServiceResourceImpl impl
 		return true;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "boId/{boId}")
+	@RequestMapping(method = RequestMethod.GET, value = "/{boId}")
 	@Override
-	public List<Product> findByProductBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
+	public Product findByProductBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
 		return productService.findByBoId(boId);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "name/{name}")
+	@RequestMapping(method = RequestMethod.GET, value = "/search/{name}")
 	@Override
 	public List<Product> findByProductName(HttpServletRequest request,@PathVariable String name) throws ServiceUnavailableException {
 		return productService.findByName(name);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/")
+	@Override
+	public List<Product> getAllProduct(HttpServletRequest request) throws ServiceUnavailableException {
+		return productService.getAllProduct();
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{boId}")
+	@Override
+	public boolean deleteProduct(String boId) throws ServiceUnavailableException {
+		productService.deleteProduct(productService.findByBoId(boId));
+		return true;
 	}
 
 }

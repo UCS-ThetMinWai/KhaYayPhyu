@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "purchaseOrder")
 public class PurchaseOrder extends AbstractEntity {
@@ -16,11 +18,15 @@ public class PurchaseOrder extends AbstractEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Customer customer;
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Purchase purchase;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Product product;
+	
+	@Column(name = "weight")
+	private double weight;
 	
 	@Column(name = "quantity")
 	private int quantity;
@@ -51,6 +57,13 @@ public class PurchaseOrder extends AbstractEntity {
 	}
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
+	}
+	public double getWeight() {
+		return weight;
+	}
+
+	public void setWeight(double weight) {
+		this.weight = weight;
 	}
 	public void setProduct(Product product) {
 		this.product = product;

@@ -14,6 +14,7 @@ import com.khayayphyu.domain.Customer;
 import com.khayayphyu.domain.Purchase;
 import com.khayayphyu.domain.PurchaseOrder;
 import com.khayayphyu.domain.User;
+import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.CustomerService;
@@ -58,6 +59,7 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 	@Override
 	public List<Purchase> getAllPurchase() throws ServiceUnavailableException {
 		List<Purchase> purchaseList = purchaseDao.getAll("From Purchase purchase");
+		hibernateInitializePurchaseList(purchaseList);
 		return purchaseList;
 	}
 
@@ -66,7 +68,14 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 	public void savePurchase(Purchase purchase) throws ServiceUnavailableException {
 		if(purchase.isBoIdRequired()) {
 			purchase.setBoId(getNextBoId(EntityType.PURCHASE));
+			purchase.setStatus(Status.OPEN);
+			
 			ensurePurchaseBoId(purchase);
+		}
+		if(purchase.getBalance() == 0) {
+			purchase.setStatus(Status.CLOSE);
+		}else {
+			purchase.setStatus(Status.OPEN);
 		}
 		purchaseDao.save(purchase);
 	}
@@ -80,6 +89,9 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 	public List<Purchase> findByPeriod(Date startDate, Date endDate)throws ServiceUnavailableException {
 		String queryString = "from Purchase purchase where purchase.purchaseDate between :dataInput and :dataInput1";
 		List<Purchase> purchaseList = purchaseDao.findByDate(queryString, startDate, endDate);
+		if(purchaseList.isEmpty()) 
+			return null;
+		hibernateInitializePurchaseList(purchaseList);
 		return purchaseList;
 	}
 
@@ -106,16 +118,21 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 		}
 	}
 
-
+	@Transactional(readOnly = false)
+	@Override
+	public void deletePurchase(Purchase purchase) throws ServiceUnavailableException {
+		purchase.setStatus(Status.DELETED);
+		savePurchase(purchase);
+	}
 
 	@Override
-	public List<Purchase> findByBoId(String boId) throws ServiceUnavailableException {
-		String queryStr = "select purchase from Purchase purchase where purchase.boId=:dataInput";
+	public Purchase findByBoId(String boId) throws ServiceUnavailableException {
+		String queryStr = "select purchase from Purchase purchase where purchase.boId=:dataInput and purchase.status != :status";
 		List<Purchase> purchaseList = purchaseDao.findByString(queryStr, boId);
 		if (CollectionUtils.isEmpty(purchaseList))
 			return null;
 		hibernateInitializePurchaseList(purchaseList);
-		return purchaseList;
+		return purchaseList.get(0);
 	}
 
 

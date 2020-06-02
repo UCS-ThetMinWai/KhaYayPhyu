@@ -37,15 +37,21 @@ public class PriceServiceImpl extends AbstractServiceImpl<Price> implements Pric
 	}
 	
 	@Override
-	public List<Price> findByBoId(String boId) throws ServiceUnavailableException {
+	public Price findByBoId(String boId) throws ServiceUnavailableException {
 		String queryStr = "select price from Price price where price.boId=:dataInput";
 		List<Price> priceList = priceDao.findByString(queryStr, boId);
-		return priceList;
+		return priceList.get(0);
 	}
 
 	@Override
 	public long getCount() {
 		return priceDao.getCount("select count(price) from Price price");
+	}
+
+	@Override
+	public List<Price> getAllPrice() throws ServiceUnavailableException {
+		List<Price> priceList = priceDao.getAll("From Price price");
+		return priceList;
 	}
 
 }

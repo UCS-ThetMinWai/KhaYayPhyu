@@ -31,21 +31,22 @@ public class ProductServiceTest extends ServiceTest {
 		product.setQuantity(40);
 		product.setPeckagingType(PackingType.PACK);
 		try {
-			product.setPeckagingDate(new SimpleDateFormat("yyyy-mm-dd").parse("2020-4-13"));
+			product.setPeckagingDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-4-13"));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
 		Price price = new Price();
 		price.setBoId(SystemConstant.BOID_REQUIRED);
-		price.setBuyAmount(400000);
-		price.setSaleAmount(420000);
+		price.setBuyAmount(500000);
+		price.setSaleAmount(620000);
 		price.setDiscount(20);
 		try {
 			price.setDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-4-18"));
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
+		product.setCurrentPrice(price);
 		product.getPriceList().add(price);
 		
 		RawProduct rawProduct = new RawProduct();

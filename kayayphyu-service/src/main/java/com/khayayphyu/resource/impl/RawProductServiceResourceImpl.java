@@ -42,8 +42,14 @@ public class RawProductServiceResourceImpl extends AbstractServiceResourceImpl i
 
 	@RequestMapping(method = RequestMethod.GET, value = "boId/{boId}")
 	@Override
-	public List<RawProduct> findByBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
+	public RawProduct findByBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
 		return rawProductService.findByBoId(boId);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/list")
+	@Override
+	public List<RawProduct> getAllRawProduct(HttpServletRequest request) throws ServiceUnavailableException {
+		return rawProductService.getAllRawProduct();
 	}
 
 }

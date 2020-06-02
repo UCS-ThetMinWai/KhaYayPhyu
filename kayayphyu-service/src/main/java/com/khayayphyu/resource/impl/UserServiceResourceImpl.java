@@ -25,7 +25,7 @@ public class UserServiceResourceImpl extends AbstractServiceResourceImpl impleme
 	
 	@RequestMapping(method = RequestMethod.POST)
 	@Override
-	public Boolean createUsere(HttpServletRequest request,@RequestBody User user) {
+	public Boolean createUser(HttpServletRequest request,@RequestBody User user) {
 		try {
 			userService.saveUser(user);
 		} catch (ServiceUnavailableException e) {
@@ -34,16 +34,29 @@ public class UserServiceResourceImpl extends AbstractServiceResourceImpl impleme
 		return true;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/boId/{boId}")
+	@RequestMapping(method = RequestMethod.GET, value = "/{boId}")
 	@Override
-	public List<User> findByBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
+	public User findByBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
 		return userService.findByBoId(boId);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/name/{name}")
+	@RequestMapping(method = RequestMethod.GET, value = "/search/{name}")
 	@Override
 	public List<User> findByName(HttpServletRequest request,@PathVariable String name) throws ServiceUnavailableException {
 		return userService.findByName(name);
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{boId}")
+	@Override
+	public boolean deleteUser(@PathVariable("boId") String boId) throws ServiceUnavailableException {
+		userService.deleteUser(userService.findByBoId(boId));
+		return true;
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "")
+	@Override
+	public List<User> getAllUser(HttpServletRequest request) throws ServiceUnavailableException {
+		return userService.getAllUser();
 	}
 
 }

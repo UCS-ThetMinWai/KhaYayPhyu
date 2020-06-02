@@ -26,6 +26,9 @@ public class SaleOrderServiceTest extends ServiceTest {
 		SaleOrder saleOrder = new SaleOrder();
 		saleOrder.setBoId(SystemConstant.BOID_REQUIRED);
 		saleOrder.setPeckagingType(PackingType.CARD);
+		saleOrder.setWeight(20.5);
+		saleOrder.setQuantity(12);
+		saleOrder.setAmount(4000);
 		
 //		Sale sale = new Sale();
 //		sale.setBoId(SystemConstant.BOID_REQUIRED);
@@ -36,11 +39,11 @@ public class SaleOrderServiceTest extends ServiceTest {
 //			e.printStackTrace();
 //		}
 		Product product = new Product();
-		product.setId(3);
+		product.setId(1);
 		saleOrder.setProduct(product);
 		
 		Sale sale = new Sale(); // saleService.find
-		sale.setId(4);
+		sale.setId(2);
 		saleOrder.setSale(sale);
 		
 		try {

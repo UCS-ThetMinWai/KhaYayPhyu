@@ -39,7 +39,7 @@ public class PurchaseOrderServiceResourceImpl extends AbstractServiceResourceImp
 
 	@RequestMapping(method = RequestMethod.GET, value = "boId/{boId}")
 	@Override
-	public List<PurchaseOrder> findByBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
+	public PurchaseOrder findByBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
 		return purchaseOrderService.findByBoId(boId);
 	}
 
@@ -48,6 +48,12 @@ public class PurchaseOrderServiceResourceImpl extends AbstractServiceResourceImp
 	public List<PurchaseOrder> findByPeriod(HttpServletRequest request,@RequestParam Date startDate,@RequestParam Date endDate)
 			throws ServiceUnavailableException {
 		return purchaseOrderService.findByPeriod(startDate, endDate);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/list")
+	@Override
+	public List<PurchaseOrder> getAllPurchaseOrder(HttpServletRequest request) throws ServiceUnavailableException {
+		return purchaseOrderService.getAllPurchaseOrder();
 	}
 
 }

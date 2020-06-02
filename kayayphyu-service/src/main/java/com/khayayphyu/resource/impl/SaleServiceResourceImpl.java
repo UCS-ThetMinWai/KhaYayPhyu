@@ -6,6 +6,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,44 +23,67 @@ import com.khayayphyu.service.SaleService;
 @RestController
 @RequestMapping(value = "/sale")
 public class SaleServiceResourceImpl extends AbstractServiceResourceImpl implements SaleServiceResource {
-
+	
 	@Autowired
 	private SaleService saleService;
 	
+//	@Autowired
+//	private CustomerService customerService;
+	
 	@RequestMapping(method = RequestMethod.POST)
 	@Override
-	public Boolean createSale(HttpServletRequest request,@RequestBody Sale sale) {
-		try {
-			saleService.SaveSale(sale);
-		} catch (ServiceUnavailableException e) {
-			e.printStackTrace();
-		}
+	public boolean createSale(@RequestBody Sale sale) throws ServiceUnavailableException {
+//		
+//		logger.info("Array string is " + jsonObject);
+//		ArrayList<LinkedHashMap<String, ?>> jsonArray = (ArrayList) jsonObject.get("json");
+//		
+//		
+//		Customer customer = null;
+//		
+//		
+//		Sale sale = new Sale();
+//		sale.setCustomer(customer);
+//		for(LinkedHashMap<String, ?> json: jsonArray) {
+//			SaleOrder saleOrder = new SaleOrder();
+//			Product product = new Product();
+//			product.setId(Integer.parseInt((String)json.get("productId")));
+//			saleOrder.setProduct(product);
+//			saleOrder.setQuantity(Integer.parseInt((String)json.get("quantity")));
+//		}
+		saleService.SaveSale(sale);
 		return true;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/boId/{boId}")
+	@RequestMapping(method = RequestMethod.GET, value = "/{boId}")
 	@Override
-	public List<Sale> findBySaleBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
+	public Sale findBySaleBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
 		return saleService.findByBoId(boId);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/name/{name}")
+	@RequestMapping(method = RequestMethod.GET, value = "/search/{name}")
 	@Override
 	public List<Sale> findByName(HttpServletRequest request,@PathVariable String name) throws ServiceUnavailableException {
 		return saleService.findByName(name);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/period/{startDate}/{endDate}")
+	@RequestMapping(method = RequestMethod.GET, value = "/period/")
 	@Override
-	public List<Sale> findByPeriod(HttpServletRequest request,@RequestParam Date startDate,@RequestParam Date endDate)
+	public List<Sale> findByPeriod(HttpServletRequest request,@RequestParam("startDate") @DateTimeFormat(iso = ISO.DATE) Date startDate,@RequestParam("endDate") @DateTimeFormat(iso = ISO.DATE) Date endDate)
 			throws ServiceUnavailableException {
 		return saleService.findByPeriod(startDate, endDate);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/list")
+	@RequestMapping(method = RequestMethod.GET, value = "")
 	@Override
 	public List<Sale> getAllSale(HttpServletRequest request) throws ServiceUnavailableException {
 		return saleService.getAllSale();
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{boId}")
+	@Override
+	public boolean deleteSale(@PathVariable String boId) throws ServiceUnavailableException {
+		saleService.deleteSale(saleService.findByBoId(boId));
+		return true;
 	}
 
 }

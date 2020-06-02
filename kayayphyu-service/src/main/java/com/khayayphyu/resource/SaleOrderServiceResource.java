@@ -9,5 +9,6 @@ import com.khayayphyu.domain.exception.ServiceUnavailableException;
 
 public interface SaleOrderServiceResource {
 	Boolean createSaleOrder(HttpServletRequest request, SaleOrder saleOrder);
-	List<SaleOrder> findBySaleOrderBoId(HttpServletRequest request, String boId)throws ServiceUnavailableException;
+	SaleOrder findBySaleOrderBoId(HttpServletRequest request, String boId)throws ServiceUnavailableException;
+	List<SaleOrder> getAllSaleOrder(HttpServletRequest request)throws ServiceUnavailableException;
 }

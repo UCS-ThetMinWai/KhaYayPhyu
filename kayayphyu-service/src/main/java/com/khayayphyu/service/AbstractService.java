@@ -8,7 +8,7 @@ import com.khayayphyu.domain.exception.ServiceUnavailableException;
 public interface AbstractService<T> {
 	public long getCount();
 	
-	public List<T> findByBoId(String boId)throws ServiceUnavailableException;
+	public T findByBoId(String boId)throws ServiceUnavailableException;
 	
 	public List<T> findByName(String name)throws ServiceUnavailableException;
 
@@ -17,4 +17,5 @@ public interface AbstractService<T> {
 	public String makeBoId(String prefix, int currentObjCount);
 	
 	public String makeBoId(EntityType entityType, int currentObjectCount);
+
 }

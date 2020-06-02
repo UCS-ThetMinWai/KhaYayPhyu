@@ -24,7 +24,7 @@ public abstract class AbstractServiceImpl<T> implements AbstractService<T> {
 	}
 	
 	@Override
-	public List<T> findByBoId(String boId) throws ServiceUnavailableException {
+	public T findByBoId(String boId) throws ServiceUnavailableException {
 		return null;
 	}
 

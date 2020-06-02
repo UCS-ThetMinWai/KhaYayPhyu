@@ -75,6 +75,10 @@ public abstract class AbstractEntity {
 		return boId == null || SystemConstant.BOID_REQUIRED.equals(getBoId());
 	}
 	
+	public boolean isNew() {
+		return isBoIdRequired();
+	}
+	
 	public String toString() {
 		return new ToStringBuilder(this).append(boId).toString();
 	}

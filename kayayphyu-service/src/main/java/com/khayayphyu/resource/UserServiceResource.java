@@ -8,7 +8,9 @@ import com.khayayphyu.domain.User;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 
 public interface UserServiceResource {
-	Boolean createUsere(HttpServletRequest request, User user);
-	List<User> findByBoId(HttpServletRequest request, String boId)throws ServiceUnavailableException;
+	Boolean createUser(HttpServletRequest request, User user);
+	boolean deleteUser(String boId) throws ServiceUnavailableException;
+	User findByBoId(HttpServletRequest request, String boId)throws ServiceUnavailableException;
 	List<User> findByName(HttpServletRequest request, String name)throws ServiceUnavailableException;
+	List<User> getAllUser(HttpServletRequest request)throws ServiceUnavailableException;
 }

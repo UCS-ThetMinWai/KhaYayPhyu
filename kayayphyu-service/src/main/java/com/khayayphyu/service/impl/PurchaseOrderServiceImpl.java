@@ -61,13 +61,13 @@ public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder>
 	}
 	
 	@Override
-	public List<PurchaseOrder> findByBoId(String boId) throws ServiceUnavailableException {
+	public PurchaseOrder findByBoId(String boId) throws ServiceUnavailableException {
 		String queryStr = "from PurchaseOrder purchaseOrder where purchaseOrder.boId=:dataInput";
 		List<PurchaseOrder> purchaseOrderList = purchaseOrderDao.findByString(queryStr, boId);
 		if (CollectionUtils.isEmpty(purchaseOrderList))
 			return null;
 		hibernateInitializePurchaseOrderList(purchaseOrderList);
-		return purchaseOrderList;
+		return purchaseOrderList.get(0);
 	}
 	
 	@Override
@@ -80,6 +80,13 @@ public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder>
 	@Override
 	public long getCount() {
 		return purchaseOrderDao.getCount("select count(purchaseOrder) from PurchaseOrder purchaseOrder");
+	}
+	
+	@Override
+	public List<PurchaseOrder> getAllPurchaseOrder() throws ServiceUnavailableException {
+		List<PurchaseOrder> purchaseOrderList = purchaseOrderDao.getAll("From PurchaseOrder purchaseOrder");
+		hibernateInitializePurchaseOrderList(purchaseOrderList);
+		return purchaseOrderList;
 	}
 
 	@Override
@@ -98,8 +105,7 @@ public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder>
 		Hibernate.initialize(purchaseOrder);
 		if(purchaseOrder == null) {
 			return;
-		}
-		
+		}	
 		customerService.hibernateInitializeCustomer(purchaseOrder.getCustomer());
 		productService.hibernateInitializeProduct(purchaseOrder.getProduct());
 	}

@@ -38,16 +38,29 @@ public class CustomerServiceResourceImpl extends AbstractServiceResourceImpl imp
 		return true;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "name/{name}")
+	@RequestMapping(method = RequestMethod.GET, value = "search/{name}")
 	@Override
 	public List<Customer> findByCustomerName(HttpServletRequest request,@PathVariable String name)throws ServiceUnavailableException {
 		return customerService.findByName(name);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "boId/{boId}")
+	@RequestMapping(method = RequestMethod.GET, value = "/{boId}")
 	@Override
-	public List<Customer> findByCustomerBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
+	public Customer findByCustomerBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
 		return customerService.findByBoId(boId);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "")
+	@Override
+	public List<Customer> getAllCustomer(HttpServletRequest request) throws ServiceUnavailableException {
+		return customerService.getAllCustomer();
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{boId}")
+	@Override
+	public boolean deleteCustomer(@PathVariable String boId) throws ServiceUnavailableException {
+		customerService.deleteCustmer(customerService.findByBoId(boId));
+		return true;
 	}
 
 }

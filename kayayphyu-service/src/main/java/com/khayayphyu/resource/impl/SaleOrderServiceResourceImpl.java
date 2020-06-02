@@ -36,9 +36,16 @@ public class SaleOrderServiceResourceImpl extends AbstractServiceResourceImpl im
 
 	@RequestMapping(method = RequestMethod.GET, value = "boId/{boId}")
 	@Override
-	public List<SaleOrder> findBySaleOrderBoId(HttpServletRequest request,@PathVariable String boId)
+	public SaleOrder findBySaleOrderBoId(HttpServletRequest request,@PathVariable String boId)
 			throws ServiceUnavailableException {
 		return saleOrderService.findByBoId(boId);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/list")
+	@Override
+	public List<SaleOrder> getAllSaleOrder(HttpServletRequest request) throws ServiceUnavailableException {
+		
+		return saleOrderService.getAllSaleOrder();
 	}
 
 }

@@ -13,16 +13,19 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="sale")
 public class Sale extends AbstractEntity {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Customer customer;
-
+	
 	@OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<SaleOrder> saleOrderList;
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	private User saleBy;
 	

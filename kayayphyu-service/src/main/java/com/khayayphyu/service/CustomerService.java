@@ -7,6 +7,8 @@ import com.khayayphyu.domain.exception.ServiceUnavailableException;
 
 public interface CustomerService extends AbstractService<Customer> {
 	public void saveCustomer(Customer customer)throws ServiceUnavailableException;
+	public void deleteCustmer(Customer customer)throws ServiceUnavailableException;
+	public List<Customer> getAllCustomer()throws ServiceUnavailableException;
 	public void hibernateInitializeCustomerList(List<Customer> customerList);
 	public void hibernateInitializeCustomer(Customer customer);
 

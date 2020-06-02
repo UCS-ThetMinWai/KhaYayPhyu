@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.khayayphyu.dao.CustomerDao;
 import com.khayayphyu.domain.Customer;
+import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.CustomerService;
@@ -29,6 +30,7 @@ public class CustomerServiceImpl extends AbstractServiceImpl<Customer> implement
 	public void saveCustomer(Customer customer) throws ServiceUnavailableException {
 		if (customer.isBoIdRequired()) {
 			customer.setBoId(getNextBoId(EntityType.CUSTOMER));
+			customer.setStatus(Status.ACTIVE);
 		}
 		customerDao.save(customer);
 	}
@@ -40,8 +42,8 @@ public class CustomerServiceImpl extends AbstractServiceImpl<Customer> implement
 
 	@Override
 	public List<Customer> findByName(String name) throws ServiceUnavailableException {
-		String queryStr = "select customer from Customer customer where customer.name=:dataInput";
-		List<Customer> customerList = customerDao.findByString(queryStr, name);
+		String queryStr = "from Customer customer where customer.name like :dataInput and customer.status != :status";
+		List<Customer> customerList = customerDao.findByString(queryStr, "%" + name + "%");
 		logger.info(customerList);
 		if (CollectionUtils.isEmpty(customerList))
 			return null;
@@ -50,13 +52,20 @@ public class CustomerServiceImpl extends AbstractServiceImpl<Customer> implement
 	}
 	
 	@Override
-	public List<Customer> findByBoId(String boId) throws ServiceUnavailableException {
-		String queryStr = "select customer from Customer customer where customer.boId=:dataInput";
+	public Customer findByBoId(String boId) throws ServiceUnavailableException {
+		String queryStr = "from Customer customer where customer.boId=:dataInput and customer.status != :status";
 		List<Customer> customerList = customerDao.findByString(queryStr, boId);
 		if (CollectionUtils.isEmpty(customerList))
 			return null;
 		hibernateInitializeCustomerList(customerList);
-		return customerList;
+		return customerList.get(0);
+	}
+	
+	@Transactional(readOnly = false)
+	@Override
+	public void deleteCustmer(Customer customer) throws ServiceUnavailableException {
+		customer.setStatus(Status.DELETED);
+		saveCustomer(customer);
 	}
 
 	@Override
@@ -76,6 +85,12 @@ public class CustomerServiceImpl extends AbstractServiceImpl<Customer> implement
 		if(customer == null) {
 			return;
 		}
+	}
+
+	@Override
+	public List<Customer> getAllCustomer() throws ServiceUnavailableException {
+		List<Customer> customerList = customerDao.getAll("From Customer customer");
+		return customerList;
 	}
 
 }

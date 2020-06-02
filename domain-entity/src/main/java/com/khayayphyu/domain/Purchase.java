@@ -15,6 +15,8 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "purchase")
 public class Purchase extends AbstractEntity {
@@ -22,6 +24,7 @@ public class Purchase extends AbstractEntity {
 	@OneToMany(mappedBy = "purchase",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	List<PurchaseOrder> purchaseOrderList;
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Customer customer;
 	
@@ -40,7 +43,6 @@ public class Purchase extends AbstractEntity {
 	
 	public Purchase() {
 		super();
-		// purchaseOrderList = new ArrayList<>();
 	}
 	
 	public Purchase(String boId) {

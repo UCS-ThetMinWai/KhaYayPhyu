@@ -9,7 +9,6 @@ public abstract class Person extends AbstractEntity {
 	private String name;
 	private int age;
 	private String phoneNumber;
-	private String emailAddress;
     private String address;
     
     public Person() {
@@ -44,12 +43,6 @@ public abstract class Person extends AbstractEntity {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
 	
 	public String toString() {
 		return new ToStringBuilder(this)
@@ -57,7 +50,6 @@ public abstract class Person extends AbstractEntity {
 				.append(age)
 				.append(phoneNumber)
 				.append(address)
-				.append(emailAddress)
 				.toString();
 	}
 }

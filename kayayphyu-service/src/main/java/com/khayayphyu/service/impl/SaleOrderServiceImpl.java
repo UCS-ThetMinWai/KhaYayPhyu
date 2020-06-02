@@ -56,11 +56,23 @@ public class SaleOrderServiceImpl extends AbstractServiceImpl<SaleOrder> impleme
 	}
 
 	@Override
-	public List<SaleOrder> findByBoId(String boId) throws ServiceUnavailableException {
+	public SaleOrder findByBoId(String boId) throws ServiceUnavailableException {
 		String queryStr = "select saleOrder from SaleOrder saleOrder where saleOrder.boId=:dataInput";
 		List<SaleOrder> saleOrderList = saleOrderDao.findByString(queryStr, boId);
 		if (CollectionUtils.isEmpty(saleOrderList))
 			return null;
+		hibernateInitializeSaleOrderList(saleOrderList);
+		return saleOrderList.get(0);
+	}
+	
+	@Override
+	public long getCount() {
+		return saleOrderDao.getCount("select count(saleOrder) from SaleOrder saleOrder");
+	}
+
+	@Override
+	public List<SaleOrder> getAllSaleOrder() throws ServiceUnavailableException {
+		List<SaleOrder> saleOrderList = saleOrderDao.getAll("From SaleOrder saleOrder");
 		hibernateInitializeSaleOrderList(saleOrderList);
 		return saleOrderList;
 	}
@@ -81,11 +93,6 @@ public class SaleOrderServiceImpl extends AbstractServiceImpl<SaleOrder> impleme
 		if (saleOrder == null)
 			return;
 		productService.hibernateInitializeProduct(saleOrder.getProduct());
-	}
-
-	@Override
-	public long getCount() {
-		return saleOrderDao.getCount("select count(saleOrder) from SaleOrder saleOrder");
 	}
 
 }

@@ -32,7 +32,7 @@ public class PriceServiceTest extends ServiceTest {
 			e1.printStackTrace();
 		}
 		Product product = new Product();
-		product.setId(3);
+		product.setId(1);
 		price.setProduct(product);
 		try {
 			priceService.savePrice(price);

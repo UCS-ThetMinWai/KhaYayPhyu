@@ -23,15 +23,16 @@ public class PurchaseOrderServiceTest extends ServiceTest {
 	public void testSavePurchaseOrder() {
 		PurchaseOrder purchaseOrder = new PurchaseOrder();
 		purchaseOrder.setBoId(SystemConstant.BOID_REQUIRED);
+		purchaseOrder.setWeight(24.5);
 		purchaseOrder.setQuantity(40);
 		try {
-			purchaseOrder.setDate(new SimpleDateFormat("yyyy-mm-dd").parse("2020-4-13"));
+			purchaseOrder.setDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-4-13"));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
 		Product product = new Product();
-		product.setId(3);
+		product.setId(2);
 		purchaseOrder.setProduct(product);
 		
 		Customer customer = new Customer();
@@ -39,7 +40,7 @@ public class PurchaseOrderServiceTest extends ServiceTest {
 		purchaseOrder.setCustomer(customer);
 		
 		Purchase purchase = new Purchase();
-		purchase.setId(2);
+		purchase.setId(1);
 		purchaseOrder.setPurchase(purchase);
 		
 		try {

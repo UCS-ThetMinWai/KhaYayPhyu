@@ -19,7 +19,7 @@ import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.PurchaseService;
 
 public class PurchaseServiceTest extends ServiceTest {
-	private Logger logger = Logger.getLogger(PurchaseOrderServiceTest.class);
+	private Logger logger = Logger.getLogger(PurchaseServiceTest.class);
 	
 	@Autowired
 	private PurchaseService purchaseService;
@@ -44,7 +44,7 @@ public class PurchaseServiceTest extends ServiceTest {
 		purchase.setBoId(SystemConstant.BOID_REQUIRED);
 		purchase.setPayAmount(350000);
 		purchase.setTotal(400000);
-		purchase.setStatus(Status.OPENED);
+		purchase.setStatus(Status.OPEN);
 		logger.info("purchase boId" + purchase.getBoId());
 		try {
 			purchase.setPurchaseDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-04-11"));
@@ -83,7 +83,7 @@ public class PurchaseServiceTest extends ServiceTest {
 		List<Purchase> purchaseList = null;
 		try {	
 			try {
-				purchaseList = purchaseService.findByPeriod(new SimpleDateFormat("yyyy-mm-dd").parse("2020-01-11"), new SimpleDateFormat("yyyy-mm-dd").parse("2020-01-12"));
+				purchaseList = purchaseService.findByPeriod(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-11"), new SimpleDateFormat("yyyy-mm-dd").parse("2020-01-12"));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
