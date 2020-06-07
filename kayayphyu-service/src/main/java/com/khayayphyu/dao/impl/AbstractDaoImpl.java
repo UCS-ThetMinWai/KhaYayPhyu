@@ -119,12 +119,20 @@ public class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E
 
 		return count;
 	}
+	
+	public List<E> getActiveObjects(String queryStr) {
+		Query query = getCurrentSession().createQuery(queryStr);
+		query.setParameter("status", Status.DELETED);
+		return query.list();
+	}
+	
+	public void clearSession() {
+		getCurrentSession().clear();
+	}
 
 	public List<E> getAll(String queryString) {
-		List<E> entityList;
-
 		Query query = getCurrentSession().createQuery(queryString);
-		entityList = query.list();
+		List<E> entityList = query.list();
 
 		for (E entity : entityList) {
 			Hibernate.initialize(entity);

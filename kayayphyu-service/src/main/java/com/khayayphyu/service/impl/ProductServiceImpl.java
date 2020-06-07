@@ -63,11 +63,12 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 
 	private void saveExistingProduct(Product product) throws ServiceUnavailableException {
 		Product oldProduct = findByBoId(product.getBoId());
+		productDao.clearSession();
 		if (product.isSamePrice(oldProduct)) {
-			productDao.save(product);
+			productDao.saveOrUpdate(product);
 		} else {
 			product.addPriceHistory(oldProduct.getCurrentPrice());
-			productDao.save(product);
+			productDao.saveOrUpdate(product);
 		}
 	}
 
@@ -77,7 +78,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 		ensuredProductBoId(product);
 		productDao.save(product);
 	}
-	
+
 	@Override
 	public long getCount() {
 		return productDao.getCount("select count(product) from Product product");
@@ -118,7 +119,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 	@Override
 	public void deleteProduct(Product product) throws ServiceUnavailableException {
 		product.setStatus(Status.DELETED);
-		saveProduct(product);
+		productDao.saveOrUpdate(product);
 	}
 
 	@Override
@@ -134,8 +135,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 
 	@Override
 	public List<Product> getAllProduct() throws ServiceUnavailableException {
-		logger.info("here product");
-		List<Product> productList = productDao.getAll("From Product product");
+		List<Product> productList = productDao.getActiveObjects("from Product product where product.status != :status");
 		hibernateInitializeProductList(productList);
 		return productList;
 	}

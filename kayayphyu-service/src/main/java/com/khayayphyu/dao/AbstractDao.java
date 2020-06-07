@@ -1,6 +1,7 @@
 package com.khayayphyu.dao;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,4 +28,12 @@ public interface AbstractDao<E, I extends Serializable> {
 	public List<E> getAll(String queryString);
 
 	public List<E> getAll(String queryString, int pageNumber);
+	
+	default public List<E> getActiveObjects(String queryStr) {
+		return new ArrayList<>();
+	}
+	
+	default public void clearSession() {
+		
+	}
 }

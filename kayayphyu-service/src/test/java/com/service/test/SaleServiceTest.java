@@ -52,7 +52,7 @@ public class SaleServiceTest extends ServiceTest {
 		sale.setSaleBy(user);
 		
 		try {
-			saleService.SaveSale(sale);
+			saleService.saveSale(sale);
 			logger.info("balance " + sale.getBalance());
 			logger.info("save!");
 		} catch (ServiceUnavailableException e) {

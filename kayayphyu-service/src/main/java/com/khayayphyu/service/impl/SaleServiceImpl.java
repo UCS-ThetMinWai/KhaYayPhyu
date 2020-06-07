@@ -44,7 +44,7 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 
 	@Transactional(readOnly = false)
 	@Override
-	public void SaveSale(Sale sale) throws ServiceUnavailableException {
+	public void saveSale(Sale sale) throws ServiceUnavailableException {
 		if (sale.isBoIdRequired()) {
 			sale.setBoId(getNextBoId(EntityType.SALE));
 			sale.setStatus(Status.OPEN);
@@ -100,7 +100,7 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 	@Override
 	public void deleteSale(Sale sale) throws ServiceUnavailableException {
 		sale.setStatus(Status.DELETED);
-		SaveSale(sale);
+		saveSale(sale);
 	}
 
 	@Override

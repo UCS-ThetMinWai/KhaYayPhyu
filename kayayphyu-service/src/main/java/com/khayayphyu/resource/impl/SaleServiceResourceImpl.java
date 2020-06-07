@@ -23,53 +23,40 @@ import com.khayayphyu.service.SaleService;
 @RestController
 @RequestMapping(value = "/sale")
 public class SaleServiceResourceImpl extends AbstractServiceResourceImpl implements SaleServiceResource {
-	
+
 	@Autowired
 	private SaleService saleService;
-	
+
 //	@Autowired
 //	private CustomerService customerService;
-	
+
 	@RequestMapping(method = RequestMethod.POST)
 	@Override
 	public boolean createSale(@RequestBody Sale sale) throws ServiceUnavailableException {
-//		
-//		logger.info("Array string is " + jsonObject);
-//		ArrayList<LinkedHashMap<String, ?>> jsonArray = (ArrayList) jsonObject.get("json");
-//		
-//		
-//		Customer customer = null;
-//		
-//		
-//		Sale sale = new Sale();
-//		sale.setCustomer(customer);
-//		for(LinkedHashMap<String, ?> json: jsonArray) {
-//			SaleOrder saleOrder = new SaleOrder();
-//			Product product = new Product();
-//			product.setId(Integer.parseInt((String)json.get("productId")));
-//			saleOrder.setProduct(product);
-//			saleOrder.setQuantity(Integer.parseInt((String)json.get("quantity")));
-//		}
-		saleService.SaveSale(sale);
+		sale.getSaleOrderList().forEach(so -> so.setSale(sale));
+		saleService.saveSale(sale);
 		return true;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/{boId}")
 	@Override
-	public Sale findBySaleBoId(HttpServletRequest request,@PathVariable String boId) throws ServiceUnavailableException {
+	public Sale findBySaleBoId(HttpServletRequest request, @PathVariable String boId)
+			throws ServiceUnavailableException {
 		return saleService.findByBoId(boId);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/search/{name}")
 	@Override
-	public List<Sale> findByName(HttpServletRequest request,@PathVariable String name) throws ServiceUnavailableException {
+	public List<Sale> findByName(HttpServletRequest request, @PathVariable String name)
+			throws ServiceUnavailableException {
 		return saleService.findByName(name);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/period/")
 	@Override
-	public List<Sale> findByPeriod(HttpServletRequest request,@RequestParam("startDate") @DateTimeFormat(iso = ISO.DATE) Date startDate,@RequestParam("endDate") @DateTimeFormat(iso = ISO.DATE) Date endDate)
-			throws ServiceUnavailableException {
+	public List<Sale> findByPeriod(HttpServletRequest request,
+			@RequestParam("startDate") @DateTimeFormat(iso = ISO.DATE) Date startDate,
+			@RequestParam("endDate") @DateTimeFormat(iso = ISO.DATE) Date endDate) throws ServiceUnavailableException {
 		return saleService.findByPeriod(startDate, endDate);
 	}
 
