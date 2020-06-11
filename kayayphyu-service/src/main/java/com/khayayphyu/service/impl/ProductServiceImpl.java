@@ -3,7 +3,6 @@ package com.khayayphyu.service.impl;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,18 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.khayayphyu.dao.ProductDao;
 import com.khayayphyu.domain.Price;
 import com.khayayphyu.domain.Product;
-import com.khayayphyu.domain.RawProduct;
 import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.PriceService;
 import com.khayayphyu.service.ProductService;
-import com.khayayphyu.service.RawProductService;
 
 @Service("productService")
 @Transactional(readOnly = true)
 public class ProductServiceImpl extends AbstractServiceImpl<Product> implements ProductService {
-	private Logger logger = Logger.getLogger(ProductServiceImpl.class);
+	//private Logger logger = Logger.getLogger(ProductServiceImpl.class);
 
 	@Autowired
 	private ProductDao productDao;
@@ -31,11 +28,8 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 	@Autowired
 	private PriceService priceService;
 
-	@Autowired
-	private RawProductService rawProductService;
-
 	public void ensuredProductBoId(Product product) {
-		if (product.getPriceList() == null || product.getRawProduct() == null)
+		if (product.getPriceList() == null)
 			return;
 		if (CollectionUtils.isEmpty(product.getPriceList()))
 			return;
@@ -45,10 +39,6 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 			}
 		}
 
-		RawProduct rawProduct = product.getRawProduct();
-		if (rawProduct != null) {
-			rawProduct.setBoId(rawProductService.getNextBoId(EntityType.RAWPRODUCT));
-		}
 	}
 
 	@Transactional(readOnly = false)
@@ -67,7 +57,16 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 		if (product.isSamePrice(oldProduct)) {
 			productDao.saveOrUpdate(product);
 		} else {
-			product.addPriceHistory(oldProduct.getCurrentPrice());
+			// product.setBoId(getNextBoId(EntityType.PRODUCT));
+			
+			Price currentPrice = product.getCurrentPrice();
+			String currentPriceBoId = currentPrice.getBoId();
+			currentPrice.setId(0);
+			currentPrice.setBoId(priceService.getNextBoId(EntityType.PRICE));
+			
+			Price oldPrice = oldProduct.getCurrentPrice();
+			oldPrice.setProduct(product);
+			oldPrice.setBoId(currentPriceBoId);
 			productDao.saveOrUpdate(product);
 		}
 	}
@@ -127,7 +126,6 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 		Hibernate.initialize(product);
 		if (product == null)
 			return;
-		Hibernate.initialize(product.getRawProduct());
 		for (Price price : product.getPriceList()) {
 			Hibernate.initialize(price);
 		}

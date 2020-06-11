@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.khayayphyu.domain.Customer;
@@ -38,9 +39,9 @@ public class CustomerServiceResourceImpl extends AbstractServiceResourceImpl imp
 		return true;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "search/{name}")
+	@RequestMapping(method = RequestMethod.GET, value = "")
 	@Override
-	public List<Customer> findByCustomerName(HttpServletRequest request,@PathVariable String name)throws ServiceUnavailableException {
+	public List<Customer> findByCustomerName(HttpServletRequest request,@RequestParam("name") String name)throws ServiceUnavailableException {
 		return customerService.findByName(name);
 	}
 
@@ -50,7 +51,7 @@ public class CustomerServiceResourceImpl extends AbstractServiceResourceImpl imp
 		return customerService.findByBoId(boId);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "")
+	@RequestMapping(method = RequestMethod.GET, value = "/")
 	@Override
 	public List<Customer> getAllCustomer(HttpServletRequest request) throws ServiceUnavailableException {
 		return customerService.getAllCustomer();

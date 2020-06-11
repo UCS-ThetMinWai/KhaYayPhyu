@@ -29,7 +29,7 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
 
 	@Override
 	public User findByBoId(String boId) throws ServiceUnavailableException {
-		String queryStr = "from User user where user.boId=:dataInput and user.status != :status";
+		String queryStr = "from User user where user.boId = :dataInput and user.status != :status";
 		List<User> userList = userDao.findByString(queryStr, boId);
 		return userList.get(0);
 	}

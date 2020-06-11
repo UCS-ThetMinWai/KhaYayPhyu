@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.khayayphyu.domain.Product;
@@ -44,9 +45,9 @@ public class ProductServiceResourceImpl extends AbstractServiceResourceImpl impl
 		return productService.findByBoId(boId);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/search/{name}")
+	@RequestMapping(method = RequestMethod.GET, value = "")
 	@Override
-	public List<Product> findByProductName(HttpServletRequest request, @PathVariable String name)
+	public List<Product> findByProductName(HttpServletRequest request, @RequestParam("name") String name)
 			throws ServiceUnavailableException {
 		return productService.findByName(name);
 	}

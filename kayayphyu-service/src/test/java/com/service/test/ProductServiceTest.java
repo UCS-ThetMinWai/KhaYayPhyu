@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.khayayphyu.domain.Price;
 import com.khayayphyu.domain.Product;
-import com.khayayphyu.domain.RawProduct;
 import com.khayayphyu.domain.constant.PackingType;
 import com.khayayphyu.domain.constant.SystemConstant;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
@@ -48,10 +47,6 @@ public class ProductServiceTest extends ServiceTest {
 		}
 		product.setCurrentPrice(price);
 		product.getPriceList().add(price);
-		
-		RawProduct rawProduct = new RawProduct();
-		rawProduct.setId(1);
-		product.setRawProduct(rawProduct);
 		
 		try {
 			productService.saveProduct(product);

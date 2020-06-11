@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.khayayphyu.domain.User;
@@ -40,9 +41,9 @@ public class UserServiceResourceImpl extends AbstractServiceResourceImpl impleme
 		return userService.findByBoId(boId);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/search/{name}")
+	@RequestMapping(method = RequestMethod.GET, value = "")
 	@Override
-	public List<User> findByName(HttpServletRequest request,@PathVariable String name) throws ServiceUnavailableException {
+	public List<User> findByName(HttpServletRequest request,@RequestParam("name") String name) throws ServiceUnavailableException {
 		return userService.findByName(name);
 	}
 	
@@ -53,7 +54,7 @@ public class UserServiceResourceImpl extends AbstractServiceResourceImpl impleme
 		return true;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "")
+	@RequestMapping(method = RequestMethod.GET, value = "/")
 	@Override
 	public List<User> getAllUser(HttpServletRequest request) throws ServiceUnavailableException {
 		return userService.getAllUser();

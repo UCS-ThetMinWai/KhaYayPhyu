@@ -11,7 +11,6 @@ public interface SystemConstant {
 		SALE("Sale", "SALE"),
 		PRICE("Price", "PRICE"),
 		PRODUCT("Product", "PRODUCT"),
-		PRODUCTTYPE("ProductType", "PRODUCT_TYPE"),
 		SALEORDER("SaleOrder", "SALEORDER"),
 		RAWPRODUCT("RawProduct", "RAWPRODUCT"),
 		PURCHASE("Purchase", "PURCHASE"),

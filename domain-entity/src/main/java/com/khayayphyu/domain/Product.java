@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -31,11 +30,8 @@ public class Product extends AbstractEntity {
 	@Column(name = "productName")
 	private String productName;
 	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private Price currentPrice;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	private RawProduct rawProduct;
 
 	public Price getCurrentPrice() {
 		return currentPrice;
@@ -70,14 +66,6 @@ public class Product extends AbstractEntity {
 
 	public void setPriceList(List<Price> priceList) {
 		this.priceList = priceList;
-	}
-
-	public RawProduct getRawProduct() {
-		return rawProduct;
-	}
-
-	public void setRawProduct(RawProduct rawProduct) {
-		this.rawProduct = rawProduct;
 	}
 
 	public int getQuantity() {
@@ -124,7 +112,7 @@ public class Product extends AbstractEntity {
 	}
 
 	public String toString() {
-		return new ToStringBuilder(this).append(rawProduct).append(peckagingType).append(peckagingDate).toString();
+		return new ToStringBuilder(this).append(peckagingType).append(peckagingDate).toString();
 	}
 
 }

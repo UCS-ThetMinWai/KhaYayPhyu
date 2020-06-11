@@ -28,7 +28,7 @@ public class CustomerServiceImpl extends AbstractServiceImpl<Customer> implement
 	@Transactional(readOnly = false)
 	@Override
 	public void saveCustomer(Customer customer) throws ServiceUnavailableException {
-		if (customer.isBoIdRequired()) {
+		if (customer.isNew()) {
 			customer.setBoId(getNextBoId(EntityType.CUSTOMER));
 			customer.setStatus(Status.ACTIVE);
 		}
