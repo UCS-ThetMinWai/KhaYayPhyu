@@ -67,6 +67,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 			Price oldPrice = oldProduct.getCurrentPrice();
 			oldPrice.setProduct(product);
 			oldPrice.setBoId(currentPriceBoId);
+			product.getPriceList().add(oldPrice);
 			productDao.saveOrUpdate(product);
 		}
 	}
