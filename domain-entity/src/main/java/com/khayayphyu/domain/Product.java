@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -29,6 +30,9 @@ public class Product extends AbstractEntity {
 
 	@Column(name = "productName")
 	private String productName;
+	
+	@ManyToMany
+	private List<Product> productList;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	private Price currentPrice;
@@ -68,6 +72,14 @@ public class Product extends AbstractEntity {
 		this.priceList = priceList;
 	}
 
+	public List<Product> getProductList() {
+		return productList;
+	}
+
+	public void setProductList(List<Product> productList) {
+		this.productList = productList;
+	}
+
 	public int getQuantity() {
 		return quantity;
 	}
@@ -99,6 +111,7 @@ public class Product extends AbstractEntity {
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
+	
 	
 	public boolean isSamePrice(Product product) {
 		return currentPrice.getSaleAmount() == product.currentPrice.getSaleAmount();
