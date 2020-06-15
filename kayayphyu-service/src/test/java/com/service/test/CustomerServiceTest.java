@@ -23,7 +23,6 @@ public class CustomerServiceTest extends ServiceTest {
 		Customer customer = new Customer();
 		customer.setBoId(SystemConstant.BOID_REQUIRED);
 		customer.setName("Myo Thura");
-		customer.setAge(27);
 		customer.setStatus(Status.ACTIVE);
 		customer.setAddress("Kyun Ywar");
 		customer.setPhoneNumber("09684876787");
@@ -40,7 +39,7 @@ public class CustomerServiceTest extends ServiceTest {
 			List<Customer> customerList = customerService.findByName("Myo Thura");
 			for(Customer customer : customerList) {
 	
-				System.out.println(customer.getBoId()+" "+customer.getName() + " " + customer.getAge());
+				System.out.println(customer.getBoId()+" "+customer.getName());
 			}
 
 		} catch (ServiceUnavailableException e) {

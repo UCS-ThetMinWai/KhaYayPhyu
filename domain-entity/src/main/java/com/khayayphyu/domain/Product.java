@@ -26,7 +26,10 @@ import com.khayayphyu.domain.constant.PackingType;
 public class Product extends AbstractEntity {
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Price> priceList;
+	private List<Price> salePriceHistory;
+	
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Price> buyPriceHistory;
 
 	@Column(name = "productName")
 	private String productName;
@@ -35,14 +38,17 @@ public class Product extends AbstractEntity {
 	private List<Product> productList;
 	
 	@OneToOne(cascade = CascadeType.ALL)
-	private Price currentPrice;
+	private Price currentSalePrice;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	private Price currentBuyPrice;
 
 	public Price getCurrentPrice() {
-		return currentPrice;
+		return currentSalePrice;
 	}
 
 	public void setCurrentPrice(Price currentPrice) {
-		this.currentPrice = currentPrice;
+		this.currentSalePrice = currentPrice;
 	}
 
 	@Column(name = "quantity")
@@ -65,11 +71,11 @@ public class Product extends AbstractEntity {
 	}
 
 	public List<Price> getPriceList() {
-		return priceList;
+		return salePriceHistory;
 	}
 
 	public void setPriceList(List<Price> priceList) {
-		this.priceList = priceList;
+		this.salePriceHistory = priceList;
 	}
 
 	public List<Product> getProductList() {
@@ -78,6 +84,38 @@ public class Product extends AbstractEntity {
 
 	public void setProductList(List<Product> productList) {
 		this.productList = productList;
+	}
+
+	public List<Price> getSalePriceHistory() {
+		return salePriceHistory;
+	}
+
+	public void setSalePriceHistory(List<Price> salePriceHistory) {
+		this.salePriceHistory = salePriceHistory;
+	}
+
+	public List<Price> getBuyPriceHistory() {
+		return buyPriceHistory;
+	}
+
+	public void setBuyPriceHistory(List<Price> buyPriceHistory) {
+		this.buyPriceHistory = buyPriceHistory;
+	}
+
+	public Price getCurrentSalePrice() {
+		return currentSalePrice;
+	}
+
+	public void setCurrentSalePrice(Price currentSalePrice) {
+		this.currentSalePrice = currentSalePrice;
+	}
+
+	public Price getCurrentBuyPrice() {
+		return currentBuyPrice;
+	}
+
+	public void setCurrentBuyPrice(Price currentBuyPrice) {
+		this.currentBuyPrice = currentBuyPrice;
 	}
 
 	public int getQuantity() {
@@ -114,14 +152,14 @@ public class Product extends AbstractEntity {
 	
 	
 	public boolean isSamePrice(Product product) {
-		return currentPrice.getSaleAmount() == product.currentPrice.getSaleAmount();
+		return currentSalePrice.getSaleAmount() == product.currentSalePrice.getSaleAmount();
 	}
 	
 	public void addPriceHistory(Price oldPrice) {
-		if(priceList == null) {
-			priceList = new ArrayList<>();
+		if(salePriceHistory == null) {
+			salePriceHistory = new ArrayList<>();
 		}
-		priceList.add(oldPrice);
+		salePriceHistory.add(oldPrice);
 	}
 
 	public String toString() {

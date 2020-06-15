@@ -12,6 +12,7 @@ import com.khayayphyu.dao.SaleOrderDao;
 import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.Sale;
 import com.khayayphyu.domain.SaleOrder;
+import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.ProductService;
@@ -48,8 +49,9 @@ public class SaleOrderServiceImpl extends AbstractServiceImpl<SaleOrder> impleme
 	@Transactional(readOnly = false)
 	@Override
 	public void saveSaleOrder(SaleOrder saleOrder) throws ServiceUnavailableException {
-		if (saleOrder.isBoIdRequired()) {
+		if (saleOrder.isNew()) {
 			saleOrder.setBoId(getNextBoId(EntityType.SALEORDER));
+			saleOrder.setStatus(Status.OPEN);
 			ensuredSaleOrderBoId(saleOrder);
 		}
 		saleOrderDao.save(saleOrder);

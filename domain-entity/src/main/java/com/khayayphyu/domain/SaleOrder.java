@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -23,6 +24,9 @@ public class SaleOrder extends AbstractEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Product product;
+	
+	@OneToOne
+	private Price price;
 
 	@Column(name = "amount")
 	private int amount;
@@ -86,6 +90,14 @@ public class SaleOrder extends AbstractEntity {
 
 	public void setAmount(int amount) {
 		this.amount = amount;
+	}
+
+	public Price getPrice() {
+		return price;
+	}
+
+	public void setPrice(Price price) {
+		this.price = price;
 	}
 
 	public String toString() {

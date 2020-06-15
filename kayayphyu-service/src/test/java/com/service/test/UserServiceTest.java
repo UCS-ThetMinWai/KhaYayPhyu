@@ -22,7 +22,6 @@ public class UserServiceTest extends ServiceTest {
 		User user = new User();
 		user.setBoId(SystemConstant.BOID_REQUIRED);
 		user.setName("U mg");
-		user.setAge(27);
 		user.setStatus(Status.DELETED);
 		user.setAddress("Kyun Ywar");
 		user.setPhoneNumber("09771443284");

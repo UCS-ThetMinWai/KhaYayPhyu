@@ -1,5 +1,7 @@
 package com.khayayphyu.domain;
 
+import java.util.Date;
+
 import javax.persistence.MappedSuperclass;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -7,7 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @MappedSuperclass
 public abstract class Person extends AbstractEntity {
 	private String name;
-	private int age;
+	private Date dob;
 	private String phoneNumber;
     private String address;
     
@@ -31,12 +33,15 @@ public abstract class Person extends AbstractEntity {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public int getAge() {
-		return age;
+	
+	public Date getDob() {
+		return dob;
 	}
-	public void setAge(int age) {
-		this.age = age;
+
+	public void setDob(Date dob) {
+		this.dob = dob;
 	}
+
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -47,7 +52,6 @@ public abstract class Person extends AbstractEntity {
 	public String toString() {
 		return new ToStringBuilder(this)
 				.append(name)
-				.append(age)
 				.append(phoneNumber)
 				.append(address)
 				.toString();
