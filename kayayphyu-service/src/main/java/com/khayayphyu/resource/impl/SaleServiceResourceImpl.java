@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -27,15 +28,14 @@ public class SaleServiceResourceImpl extends AbstractServiceResourceImpl impleme
 	@Autowired
 	private SaleService saleService;
 
-//	@Autowired
-//	private CustomerService customerService;
+	private static Logger logger = Logger.getLogger(SaleServiceResourceImpl.class);
 
 	@RequestMapping(method = RequestMethod.POST)
 	@Override
 	public boolean createSale(@RequestBody Sale sale) throws ServiceUnavailableException {
 		sale.getSaleOrderList().forEach(so -> {
 			so.setSale(sale);
-			so.setPrice(so.getProduct().getCurrentPrice());
+			so.setPrice(so.getProduct().getSalePrice());
 		});
 		saleService.saveSale(sale);
 		return true;

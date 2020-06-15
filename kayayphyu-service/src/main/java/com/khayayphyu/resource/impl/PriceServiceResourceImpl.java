@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.khayayphyu.domain.Price;
+import com.khayayphyu.domain.SalePrice;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.resource.PriceServiceResource;
 import com.khayayphyu.service.PriceService;
@@ -29,7 +29,7 @@ public class PriceServiceResourceImpl extends AbstractServiceResourceImpl implem
 
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@Override
-	public Boolean createPrice(HttpServletRequest request,@RequestBody Price price) {
+	public Boolean createPrice(HttpServletRequest request,@RequestBody SalePrice price) {
 		try {
 			priceService.savePrice(price);
 			logger.info(price);
@@ -42,14 +42,14 @@ public class PriceServiceResourceImpl extends AbstractServiceResourceImpl implem
 	
 	@RequestMapping(method = RequestMethod.POST, value = "period/{startDate}/{endDate}")
 	@Override
-	public List<Price> findByPeriod(HttpServletRequest request,@RequestParam Date startDate,@RequestParam Date endDate)
+	public List<SalePrice> findByPeriod(HttpServletRequest request,@RequestParam Date startDate,@RequestParam Date endDate)
 			throws ServiceUnavailableException {
 		return priceService.findByPeriod(startDate, endDate);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/list")
 	@Override
-	public List<Price> getAllPrice(HttpServletRequest request) throws ServiceUnavailableException {
+	public List<SalePrice> getAllPrice(HttpServletRequest request) throws ServiceUnavailableException {
 		return priceService.getAllPrice();
 	}
 

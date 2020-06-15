@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.khayayphyu.domain.Price;
+import com.khayayphyu.domain.SalePrice;
 import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.constant.SystemConstant;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
@@ -21,10 +21,9 @@ public class PriceServiceTest extends ServiceTest {
 	
 	@Test
 	public void testSavePrice() {
-		Price price = new Price();
+		SalePrice price = new SalePrice();
 		price.setBoId(SystemConstant.BOID_REQUIRED);
-		price.setBuyAmount(400000);
-		price.setSaleAmount(420000);
+		price.setAmount(400000);
 		price.setDiscount(0);
 		try {
 			price.setDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-03-18"));

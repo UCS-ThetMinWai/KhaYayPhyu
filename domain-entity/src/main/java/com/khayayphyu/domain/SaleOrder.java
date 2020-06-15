@@ -26,7 +26,7 @@ public class SaleOrder extends AbstractEntity {
 	private Product product;
 	
 	@OneToOne
-	private Price price;
+	private SalePrice price;
 
 	@Column(name = "amount")
 	private int amount;
@@ -92,11 +92,11 @@ public class SaleOrder extends AbstractEntity {
 		this.amount = amount;
 	}
 
-	public Price getPrice() {
+	public SalePrice getPrice() {
 		return price;
 	}
 
-	public void setPrice(Price price) {
+	public void setPrice(SalePrice price) {
 		this.price = price;
 	}
 

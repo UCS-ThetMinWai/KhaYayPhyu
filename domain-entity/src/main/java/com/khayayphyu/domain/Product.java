@@ -25,56 +25,50 @@ import com.khayayphyu.domain.constant.PackingType;
 @Table(name = "product")
 public class Product extends AbstractEntity {
 
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Price> salePriceHistory;
-	
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Price> buyPriceHistory;
-
 	@Column(name = "productName")
 	private String productName;
-	
+
 	@ManyToMany
 	private List<Product> productList;
-	
-	@OneToOne(cascade = CascadeType.ALL)
-	private Price currentSalePrice;
-	
-	@OneToOne(cascade = CascadeType.ALL)
-	private Price currentBuyPrice;
 
-	public Price getCurrentPrice() {
-		return currentSalePrice;
-	}
-
-	public void setCurrentPrice(Price currentPrice) {
-		this.currentSalePrice = currentPrice;
-	}
+	@OneToOne(cascade = CascadeType.ALL)
+	private SalePrice salePrice;
 
 	@Column(name = "quantity")
 	private int quantity;
 
 	@Column(name = "peckagingType")
 	@Enumerated(EnumType.STRING)
-	private PackingType peckagingType;
+	private PackingType packagingType;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "peckagingDate")
-	private Date peckagingDate;
+	private Date packagingDate;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<SalePrice> salePriceHistory;
 
 	public Product() {
 		super();
+	}
+
+	public SalePrice getSalePrice() {
+		return salePrice;
+	}
+
+	public void setSalePrice(SalePrice currentPrice) {
+		this.salePrice = currentPrice;
 	}
 
 	public Product(String boId) {
 		super(boId);
 	}
 
-	public List<Price> getPriceList() {
+	public List<SalePrice> getPriceList() {
 		return salePriceHistory;
 	}
 
-	public void setPriceList(List<Price> priceList) {
+	public void setPriceList(List<SalePrice> priceList) {
 		this.salePriceHistory = priceList;
 	}
 
@@ -86,36 +80,12 @@ public class Product extends AbstractEntity {
 		this.productList = productList;
 	}
 
-	public List<Price> getSalePriceHistory() {
+	public List<SalePrice> getSalePriceHistory() {
 		return salePriceHistory;
 	}
 
-	public void setSalePriceHistory(List<Price> salePriceHistory) {
+	public void setSalePriceHistory(List<SalePrice> salePriceHistory) {
 		this.salePriceHistory = salePriceHistory;
-	}
-
-	public List<Price> getBuyPriceHistory() {
-		return buyPriceHistory;
-	}
-
-	public void setBuyPriceHistory(List<Price> buyPriceHistory) {
-		this.buyPriceHistory = buyPriceHistory;
-	}
-
-	public Price getCurrentSalePrice() {
-		return currentSalePrice;
-	}
-
-	public void setCurrentSalePrice(Price currentSalePrice) {
-		this.currentSalePrice = currentSalePrice;
-	}
-
-	public Price getCurrentBuyPrice() {
-		return currentBuyPrice;
-	}
-
-	public void setCurrentBuyPrice(Price currentBuyPrice) {
-		this.currentBuyPrice = currentBuyPrice;
 	}
 
 	public int getQuantity() {
@@ -126,20 +96,20 @@ public class Product extends AbstractEntity {
 		this.quantity = quantity;
 	}
 
-	public PackingType getPeckagingType() {
-		return peckagingType;
+	public PackingType getPackagingType() {
+		return packagingType;
 	}
 
-	public void setPeckagingType(PackingType peckagingType) {
-		this.peckagingType = peckagingType;
+	public void setPackagingType(PackingType peckagingType) {
+		this.packagingType = peckagingType;
 	}
 
-	public Date getPeckagingDate() {
-		return peckagingDate;
+	public Date getPackagingDate() {
+		return packagingDate;
 	}
 
-	public void setPeckagingDate(Date peckagingDate) {
-		this.peckagingDate = peckagingDate;
+	public void setPackagingDate(Date peckagingDate) {
+		this.packagingDate = peckagingDate;
 	}
 
 	public String getProductName() {
@@ -149,21 +119,31 @@ public class Product extends AbstractEntity {
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
-	
-	
+
 	public boolean isSamePrice(Product product) {
-		return currentSalePrice.getSaleAmount() == product.currentSalePrice.getSaleAmount();
+		return salePrice.getAmount() == product.salePrice.getAmount();
 	}
-	
-	public void addPriceHistory(Price oldPrice) {
-		if(salePriceHistory == null) {
+
+	public void updateSalePrice(SalePrice price) {
+		addSalePriceHistory(salePrice);
+		salePrice = price;
+	}
+
+	public void addNewSalePrice(SalePrice newPrice) {
+		addSalePriceHistory(salePrice);
+		salePrice = newPrice;
+	}
+
+	public void addSalePriceHistory(SalePrice oldPrice) {
+		if (salePriceHistory == null) {
 			salePriceHistory = new ArrayList<>();
 		}
+		oldPrice.setProduct(this);
 		salePriceHistory.add(oldPrice);
 	}
 
 	public String toString() {
-		return new ToStringBuilder(this).append(peckagingType).append(peckagingDate).toString();
+		return new ToStringBuilder(this).append(packagingType).append(packagingDate).toString();
 	}
 
 }

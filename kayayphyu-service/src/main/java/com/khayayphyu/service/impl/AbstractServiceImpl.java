@@ -1,6 +1,7 @@
 package com.khayayphyu.service.impl;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,6 +26,11 @@ public abstract class AbstractServiceImpl<T> implements AbstractService<T> {
 	
 	@Override
 	public T findByBoId(String boId) throws ServiceUnavailableException {
+		return null;
+	}
+	
+	@Override
+	public T findByBoId(String boId, Consumer<T> initializer) throws ServiceUnavailableException {
 		return null;
 	}
 

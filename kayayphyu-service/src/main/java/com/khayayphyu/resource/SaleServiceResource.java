@@ -9,7 +9,7 @@ import com.khayayphyu.domain.Sale;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 
 public interface SaleServiceResource {
-	boolean createSale(Sale sale) throws ServiceUnavailableException;
+	boolean createSale(Sale json) throws ServiceUnavailableException;
 	boolean deleteSale(String boId) throws ServiceUnavailableException;
 	Sale findBySaleBoId(HttpServletRequest request, String boId)throws ServiceUnavailableException;
 	List<Sale> findByName(HttpServletRequest request, String name)throws ServiceUnavailableException;
