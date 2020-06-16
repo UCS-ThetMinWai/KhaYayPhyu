@@ -24,7 +24,7 @@ public class ProductServiceTest extends ServiceTest {
 	@Test
 	public void testSaveProduct() {
 		Product product = new Product();
-		product.setPriceList(new ArrayList<SalePrice>());
+		product.setSalePriceHistory(new ArrayList<SalePrice>());
 		product.setBoId(SystemConstant.BOID_REQUIRED);
 		product.setProductName("CP CHICKEN FOOD");
 		product.setQuantity(40);
@@ -45,7 +45,7 @@ public class ProductServiceTest extends ServiceTest {
 			e1.printStackTrace();
 		}
 		product.setSalePrice(price);
-		product.getPriceList().add(price);
+		product.getSalePriceHistory().add(price);
 		
 		try {
 			productService.saveProduct(product);

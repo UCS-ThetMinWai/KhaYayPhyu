@@ -23,4 +23,6 @@ public interface ProductService extends AbstractService<Product> {
 	public void hibernateInitializeProduct(Product product);
 	
 	public boolean updateSaleAmount(Product product, int amount);
+	
+	public boolean updatePurchaseAmount(Product product, int amount);
 }

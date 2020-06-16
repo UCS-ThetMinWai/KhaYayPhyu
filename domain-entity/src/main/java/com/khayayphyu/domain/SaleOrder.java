@@ -25,8 +25,8 @@ public class SaleOrder extends AbstractEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Product product;
 	
-	@OneToOne
-	private SalePrice price;
+	@Column(name = "price")
+	private int price;
 
 	@Column(name = "amount")
 	private int amount;
@@ -92,11 +92,11 @@ public class SaleOrder extends AbstractEntity {
 		this.amount = amount;
 	}
 
-	public SalePrice getPrice() {
+	public int getPrice() {
 		return price;
 	}
 
-	public void setPrice(SalePrice price) {
+	public void setPrice(int price) {
 		this.price = price;
 	}
 

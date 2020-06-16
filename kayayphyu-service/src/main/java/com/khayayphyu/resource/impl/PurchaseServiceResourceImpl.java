@@ -30,10 +30,14 @@ public class PurchaseServiceResourceImpl extends AbstractServiceResourceImpl imp
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@Override
 	public Boolean createPurchase(HttpServletRequest request,@RequestBody Purchase purchase) {
+		purchase.getPurchaseOrderList().forEach(po -> {
+			po.setPurchase(purchase);
+			po.setPrice(po.getProduct().getPurchasePrice().getAmount());
+		});
 		try {
 			purchaseService.savePurchase(purchase);
 		} catch (ServiceUnavailableException e) {
-			e.printStackTrace();
+			return false;
 		}
 		return true;
 	}

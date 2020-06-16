@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 import org.springframework.stereotype.Repository;
 
-import com.khayayphyu.dao.PriceDao;
+import com.khayayphyu.dao.SalePriceDao;
 import com.khayayphyu.domain.SalePrice;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 @Repository
-public class PriceDaoImpl extends AbstractDaoImpl<SalePrice, Serializable> implements PriceDao {
-	protected PriceDaoImpl() {
+public class SalePriceDaoImpl extends AbstractDaoImpl<SalePrice, Serializable> implements SalePriceDao {
+	protected SalePriceDaoImpl() {
 		super(SalePrice.class);
 	}
 

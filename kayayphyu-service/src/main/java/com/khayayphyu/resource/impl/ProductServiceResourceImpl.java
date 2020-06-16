@@ -51,6 +51,13 @@ public class ProductServiceResourceImpl extends AbstractServiceResourceImpl impl
 		productService.updateSaleAmount(product, saleAmount);
 		return product;
 	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value = "/purchase/{boId}/{amount}")
+	public Product updatePurchaseAmount(@PathVariable("boId") String productBoId, @PathVariable("amount") int purchaseAmount) {
+		Product product = getDetailProduct(productBoId);
+		productService.updatePurchaseAmount(product, purchaseAmount);
+		return product;
+	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@Override

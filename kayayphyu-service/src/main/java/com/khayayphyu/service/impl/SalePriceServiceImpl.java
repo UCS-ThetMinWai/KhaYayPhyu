@@ -7,24 +7,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.khayayphyu.dao.PriceDao;
+import com.khayayphyu.dao.SalePriceDao;
 import com.khayayphyu.domain.SalePrice;
+import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
-import com.khayayphyu.service.PriceService;
+import com.khayayphyu.service.SalePriceService;
 
 @Transactional(readOnly = true)
-@Service("priceService")
-public class PriceServiceImpl extends AbstractServiceImpl<SalePrice> implements PriceService {
+@Service("salePriceService")
+public class SalePriceServiceImpl extends AbstractServiceImpl<SalePrice> implements SalePriceService {
 	
 	@Autowired
-	private PriceDao priceDao;
+	private SalePriceDao priceDao;
 
 	@Transactional(readOnly = false)
 	@Override
 	public void savePrice(SalePrice price) throws ServiceUnavailableException {
 		if (price.isBoIdRequired()) {
 			price.setBoId(getNextBoId(EntityType.PRICE));
+			price.setStatus(Status.OPEN);
 		}
 		priceDao.save(price);
 	}

@@ -11,13 +11,13 @@ import com.khayayphyu.domain.SalePrice;
 import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.constant.SystemConstant;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
-import com.khayayphyu.service.PriceService;
+import com.khayayphyu.service.SalePriceService;
 
 public class PriceServiceTest extends ServiceTest {
 	Logger logger = Logger.getLogger(PriceServiceTest.class);
 	
 	@Autowired
-	private PriceService priceService;
+	private SalePriceService priceService;
 	
 	@Test
 	public void testSavePrice() {

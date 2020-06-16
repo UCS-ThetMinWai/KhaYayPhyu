@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.khayayphyu.domain.SalePrice;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
-import com.khayayphyu.resource.PriceServiceResource;
-import com.khayayphyu.service.PriceService;
+import com.khayayphyu.resource.SalePriceServiceResource;
+import com.khayayphyu.service.SalePriceService;
 
 @RestController
-@RequestMapping(value= {"/price"})
-public class PriceServiceResourceImpl extends AbstractServiceResourceImpl implements PriceServiceResource {
+@RequestMapping(value= {"/salePrice"})
+public class SalePriceServiceResourceImpl extends AbstractServiceResourceImpl implements SalePriceServiceResource {
 	
-	private Logger logger = Logger.getLogger(PriceServiceResourceImpl.class);
+	private Logger logger = Logger.getLogger(SalePriceServiceResourceImpl.class);
 	
 	@Autowired
-	private PriceService priceService;
+	private SalePriceService priceService;
 
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@Override

@@ -35,7 +35,7 @@ public class SaleServiceResourceImpl extends AbstractServiceResourceImpl impleme
 	public boolean createSale(@RequestBody Sale sale) throws ServiceUnavailableException {
 		sale.getSaleOrderList().forEach(so -> {
 			so.setSale(sale);
-			so.setPrice(so.getProduct().getSalePrice());
+			so.setPrice(so.getProduct().getSalePrice().getAmount());
 		});
 		saleService.saveSale(sale);
 		return true;

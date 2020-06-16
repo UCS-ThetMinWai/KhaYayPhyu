@@ -33,6 +33,9 @@ public class Product extends AbstractEntity {
 
 	@OneToOne(cascade = CascadeType.ALL)
 	private SalePrice salePrice;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	private PurchasePrice purchasePrice;
 
 	@Column(name = "quantity")
 	private int quantity;
@@ -47,6 +50,9 @@ public class Product extends AbstractEntity {
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<SalePrice> salePriceHistory;
+	
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<PurchasePrice> purchasePriceHistory;
 
 	public Product() {
 		super();
@@ -62,14 +68,6 @@ public class Product extends AbstractEntity {
 
 	public Product(String boId) {
 		super(boId);
-	}
-
-	public List<SalePrice> getPriceList() {
-		return salePriceHistory;
-	}
-
-	public void setPriceList(List<SalePrice> priceList) {
-		this.salePriceHistory = priceList;
 	}
 
 	public List<Product> getProductList() {
@@ -96,6 +94,22 @@ public class Product extends AbstractEntity {
 		this.quantity = quantity;
 	}
 
+	public PurchasePrice getPurchasePrice() {
+		return purchasePrice;
+	}
+
+	public void setPurchasePrice(PurchasePrice purchasePrice) {
+		this.purchasePrice = purchasePrice;
+	}
+
+	public List<PurchasePrice> getPurchasePriceHistory() {
+		return purchasePriceHistory;
+	}
+
+	public void setPurchasePriceHistory(List<PurchasePrice> purchasePriceHistory) {
+		this.purchasePriceHistory = purchasePriceHistory;
+	}
+
 	public PackingType getPackagingType() {
 		return packagingType;
 	}
@@ -120,18 +134,32 @@ public class Product extends AbstractEntity {
 		this.productName = productName;
 	}
 
-	public boolean isSamePrice(Product product) {
+	public boolean isSameSalePrice(Product product) {
 		return salePrice.getAmount() == product.salePrice.getAmount();
+	}
+	
+	public boolean isSamePurchaseePrice(Product product) {
+		return purchasePrice.getAmount() == product.purchasePrice.getAmount();
 	}
 
 	public void updateSalePrice(SalePrice price) {
 		addSalePriceHistory(salePrice);
 		salePrice = price;
 	}
+	
+	public void updatePurchasePrice(PurchasePrice purchasePrice) {
+		addPurchasePriceHistory(purchasePrice);
+		this.purchasePrice = purchasePrice;
+	}
 
 	public void addNewSalePrice(SalePrice newPrice) {
 		addSalePriceHistory(salePrice);
 		salePrice = newPrice;
+	}
+	
+	public void addNewPurchasePrice(PurchasePrice newPurchasePrice) {
+		addPurchasePriceHistory(newPurchasePrice);
+		purchasePrice = newPurchasePrice;
 	}
 
 	public void addSalePriceHistory(SalePrice oldPrice) {
@@ -140,6 +168,14 @@ public class Product extends AbstractEntity {
 		}
 		oldPrice.setProduct(this);
 		salePriceHistory.add(oldPrice);
+	}
+	
+	public void addPurchasePriceHistory(PurchasePrice oldPrice) {
+		if(purchasePriceHistory == null) {
+			purchasePriceHistory = new ArrayList<>();
+		}
+		oldPrice.setProduct(this);
+		purchasePriceHistory.add(oldPrice);
 	}
 
 	public String toString() {

@@ -18,6 +18,9 @@ public class PurchaseOrder extends AbstractEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Customer customer;
 	
+	@Column(name = "price")
+	private int price;
+	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Purchase purchase;
@@ -68,6 +71,14 @@ public class PurchaseOrder extends AbstractEntity {
 	public void setProduct(Product product) {
 		this.product = product;
 	}
+	public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
+	}
+
 	public Date getDate() {
 		return date;
 	}
