@@ -58,7 +58,7 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
 
 	@Override
 	public List<User> getAllUser() throws ServiceUnavailableException {
-		List<User> userList = userDao.getAll("From User user");
+		List<User> userList = userDao.getAll("From User user and user.status != :status");
 		return userList;
 	}
 

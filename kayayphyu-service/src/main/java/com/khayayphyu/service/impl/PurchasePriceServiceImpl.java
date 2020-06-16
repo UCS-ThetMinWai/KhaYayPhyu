@@ -18,6 +18,7 @@ import com.khayayphyu.service.PurchasePriceService;
 public class PurchasePriceServiceImpl extends AbstractServiceImpl<PurchasePrice> implements PurchasePriceService {
 	PurchasePriceDao purchasePriceDao;
 
+	@Transactional(readOnly = false)
 	@Override
 	public void savePrice(PurchasePrice price) throws ServiceUnavailableException {
 		if (price.isNew()) {
