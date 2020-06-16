@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.khayayphyu.domain.constant.PackingType;
 
 @Entity

@@ -15,4 +15,8 @@ public interface SaleService extends AbstractService<Sale> {
 	public void deleteSale(Sale sale)throws ServiceUnavailableException;
 	public void hibernateInitializeSaleList(List<Sale> saleList);
 	public void hibernateInitializeSale(Sale sale);
+	
+	default void summaryInitializer(Sale sale) {
+		
+	}
 }

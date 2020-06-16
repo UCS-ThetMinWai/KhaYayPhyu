@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.khayayphyu.domain.Sale;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
+import com.khayayphyu.domain.jsonviews.DetailView;
+import com.khayayphyu.domain.jsonviews.SummaryView;
 import com.khayayphyu.resource.SaleServiceResource;
 import com.khayayphyu.service.SaleService;
 
@@ -63,14 +66,16 @@ public class SaleServiceResourceImpl extends AbstractServiceResourceImpl impleme
 		return saleService.findByPeriod(startDate, endDate);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "")
 	@Override
+	@JsonView(SummaryView.class)
+	@RequestMapping(method = RequestMethod.GET, value = "")
 	public List<Sale> getAllSale(HttpServletRequest request) throws ServiceUnavailableException {
 		return saleService.getAllSale();
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{boId}")
 	@Override
+	@JsonView(DetailView.class)
 	public boolean deleteSale(@PathVariable String boId) throws ServiceUnavailableException {
 		saleService.deleteSale(saleService.findByBoId(boId));
 		return true;
