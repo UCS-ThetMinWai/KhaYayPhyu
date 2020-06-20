@@ -91,6 +91,9 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 	@Override
 	@Transactional(readOnly = false)
 	public boolean updatePurchaseAmount(Product product, int amount) {
+		if(product == null || amount < 0) {
+			return false;
+		}
 		PurchasePrice purchasePrice = PurchasePrice.create(amount);
 		try {
 			purchasePriceService.savePrice(purchasePrice);
