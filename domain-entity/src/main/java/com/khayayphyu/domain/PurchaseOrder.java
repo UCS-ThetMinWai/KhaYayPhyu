@@ -11,66 +11,59 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.khayayphyu.domain.jsonviews.SummaryView;
+import com.khayayphyu.domain.jsonviews.Views;
+
 @Entity
 @Table(name = "purchaseOrder")
 public class PurchaseOrder extends AbstractEntity {
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Customer customer;
-	
+
 	@Column(name = "price")
+	@JsonView(SummaryView.class)
 	private int price;
-	
+
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Purchase purchase;
-	
+
+	@JsonView(Views.Comprehensive.class)
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Product product;
-	
-	@Column(name = "weight")
-	private double weight;
-	
+
+	@JsonView(SummaryView.class)
 	@Column(name = "quantity")
 	private int quantity;
-	
+
+	@JsonView(SummaryView.class)
 	@Temporal(TemporalType.DATE)
 	@Column(name = "date")
 	private Date date;
-	
+
 	public PurchaseOrder() {
 		super();
 	}
-	
+
 	public PurchaseOrder(String boId) {
 		super(boId);
 	}
-	
-	public Customer getCustomer() {
-		return customer;
-	}
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
-	}
+
 	public Product getProduct() {
 		return product;
 	}
+
 	public int getQuantity() {
 		return quantity;
 	}
+
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-	public double getWeight() {
-		return weight;
-	}
 
-	public void setWeight(double weight) {
-		this.weight = weight;
-	}
 	public void setProduct(Product product) {
 		this.product = product;
 	}
+
 	public int getPrice() {
 		return price;
 	}
@@ -82,14 +75,17 @@ public class PurchaseOrder extends AbstractEntity {
 	public Date getDate() {
 		return date;
 	}
+
 	public void setDate(Date date) {
 		this.date = date;
 	}
+
 	public Purchase getPurchase() {
 		return purchase;
 	}
+
 	public void setPurchase(Purchase purchase) {
 		this.purchase = purchase;
 	}
-	
+
 }

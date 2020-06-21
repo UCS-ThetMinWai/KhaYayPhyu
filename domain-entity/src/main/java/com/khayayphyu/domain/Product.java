@@ -37,8 +37,9 @@ public class Product extends AbstractEntity {
 	private List<Product> productList;
 
 	@JsonView(SummaryView.class)
+	@OneToOne
 	private SalePrice salePrice;
-	
+
 	@JsonView(SummaryView.class)
 	@OneToOne(cascade = CascadeType.ALL)
 	private PurchasePrice purchasePrice;
@@ -60,7 +61,7 @@ public class Product extends AbstractEntity {
 	@JsonView(DetailView.class)
 	@OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
 	private List<SalePrice> salePriceHistory;
-	
+
 	@JsonView(DetailView.class)
 	@OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
 	private List<PurchasePrice> purchasePriceHistory;
@@ -148,7 +149,7 @@ public class Product extends AbstractEntity {
 	public boolean isSameSalePrice(Product product) {
 		return salePrice.getAmount() == product.salePrice.getAmount();
 	}
-	
+
 	public boolean isSamePurchaseePrice(Product product) {
 		return purchasePrice.getAmount() == product.purchasePrice.getAmount();
 	}
@@ -157,7 +158,7 @@ public class Product extends AbstractEntity {
 		addSalePriceHistory(salePrice);
 		salePrice = price;
 	}
-	
+
 	public void updatePurchasePrice(PurchasePrice purchasePrice) {
 		addPurchasePriceHistory(purchasePrice);
 		this.purchasePrice = purchasePrice;
@@ -167,7 +168,7 @@ public class Product extends AbstractEntity {
 		addSalePriceHistory(salePrice);
 		salePrice = newPrice;
 	}
-	
+
 	public void addNewPurchasePrice(PurchasePrice newPurchasePrice) {
 		addPurchasePriceHistory(newPurchasePrice);
 		purchasePrice = newPurchasePrice;
@@ -180,9 +181,9 @@ public class Product extends AbstractEntity {
 		oldPrice.setProduct(this);
 		salePriceHistory.add(oldPrice);
 	}
-	
+
 	public void addPurchasePriceHistory(PurchasePrice oldPrice) {
-		if(purchasePriceHistory == null) {
+		if (purchasePriceHistory == null) {
 			purchasePriceHistory = new ArrayList<>();
 		}
 		oldPrice.setProduct(this);

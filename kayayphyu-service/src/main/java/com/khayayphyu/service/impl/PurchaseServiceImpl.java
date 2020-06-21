@@ -2,6 +2,7 @@ package com.khayayphyu.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Hibernate;
@@ -30,28 +31,38 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 
 	@Autowired
 	private PurchaseOrderService purchaseOrderService;
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private PurchaseDao purchaseDao;
-	
+
+	public static void detailInitializer(Purchase purchase) {
+		Hibernate.initialize(purchase);
+		Hibernate.initialize(purchase.getUser());
+		Hibernate.initialize(purchase.getCustomer());
+		for (PurchaseOrder purchaseOrder : purchase.getPurchaseOrderList()) {
+			Hibernate.initialize(purchaseOrder);
+			Hibernate.initialize(purchaseOrder.getProduct());
+		}
+	}
+
 	public void ensurePurchaseBoId(Purchase purchase) {
-		if(CollectionUtils.isEmpty(purchase.getPurchaseOrderList())) 
+		if (CollectionUtils.isEmpty(purchase.getPurchaseOrderList()))
 			return;
 		for (PurchaseOrder purchaseOrder : purchase.getPurchaseOrderList()) {
 			if (purchaseOrder.isBoIdRequired()) {
 				purchaseOrder.setBoId(purchaseOrderService.getNextBoId(EntityType.PURCHASEORDER));
 			}
 		}
-		if(purchase.getCustomer() == null || purchase.getUser() == null) {
+		if (purchase.getCustomer() == null || purchase.getUser() == null) {
 			return;
 		}
-		
+
 		Customer customer = purchase.getCustomer();
 		customer.setBoId(customerService.getNextBoId(EntityType.CUSTOMER));
-		
+
 		User user = purchase.getUser();
 		user.setBoId(userService.getNextBoId(EntityType.USER));
 	}
@@ -66,30 +77,30 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 	@Override
 	@Transactional(readOnly = false)
 	public void savePurchase(Purchase purchase) throws ServiceUnavailableException {
-		if(purchase.isBoIdRequired()) {
+		if (purchase.isBoIdRequired()) {
 			purchase.setBoId(getNextBoId(EntityType.PURCHASE));
 			purchase.setStatus(Status.OPEN);
-			
+
 			ensurePurchaseBoId(purchase);
 		}
-		if(purchase.getBalance() == 0) {
+		if (purchase.getBalance() == 0) {
 			purchase.setStatus(Status.CLOSE);
-		}else {
+		} else {
 			purchase.setStatus(Status.OPEN);
 		}
 		purchaseDao.save(purchase);
 	}
-	
+
 	@Override
 	public long getCount() {
 		return purchaseDao.getCount("select count(purchase) from Purchase purchase");
 	}
 
 	@Override
-	public List<Purchase> findByPeriod(Date startDate, Date endDate)throws ServiceUnavailableException {
+	public List<Purchase> findByPeriod(Date startDate, Date endDate) throws ServiceUnavailableException {
 		String queryString = "from Purchase purchase where purchase.purchaseDate between :dataInput and :dataInput1";
 		List<Purchase> purchaseList = purchaseDao.findByDate(queryString, startDate, endDate);
-		if(purchaseList.isEmpty()) 
+		if (purchaseList.isEmpty())
 			return null;
 		hibernateInitializePurchaseList(purchaseList);
 		return purchaseList;
@@ -98,22 +109,22 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 	@Override
 	public void hibernateInitializePurchaseList(List<Purchase> purchaseList) {
 		Hibernate.initialize(purchaseList);
-		if(CollectionUtils.isEmpty(purchaseList))
+		if (CollectionUtils.isEmpty(purchaseList))
 			return;
-		for(Purchase purchase : purchaseList) {
+		for (Purchase purchase : purchaseList) {
 			hibernateInitializePurchase(purchase);
 		}
 	}
-	
+
 	@Override
 	public void hibernateInitializePurchase(Purchase purchase) {
 		Hibernate.initialize(purchase);
-		if(purchase == null)
+		if (purchase == null)
 			return;
 		customerService.hibernateInitializeCustomer(purchase.getCustomer());
 		Hibernate.initialize(purchase.getUser());
-		
-		for(PurchaseOrder purchaseOrder : purchase.getPurchaseOrderList()) {
+
+		for (PurchaseOrder purchaseOrder : purchase.getPurchaseOrderList()) {
 			purchaseOrderService.hibernateInitializePurchaseOrder(purchaseOrder);
 		}
 	}
@@ -127,15 +138,18 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 
 	@Override
 	public Purchase findByBoId(String boId) throws ServiceUnavailableException {
-		String queryStr = "select purchase from Purchase purchase where purchase.boId=:dataInput and purchase.status != :status";
+		return findByBoId(boId, this::hibernateInitializePurchase);
+	}
+
+	public Purchase findByBoId(String boId, Consumer<Purchase> initializer) {
+		String queryStr = "from Purchase purchase where purchase.boId=:dataInput and purchase.status != :status";
 		List<Purchase> purchaseList = purchaseDao.findByString(queryStr, boId);
 		if (CollectionUtils.isEmpty(purchaseList))
 			return null;
-		hibernateInitializePurchaseList(purchaseList);
-		return purchaseList.get(0);
+		Purchase purchase = purchaseList.get(0);
+		initializer.accept(purchase);
+		return purchase;
 	}
-
-
 
 	@Override
 	public List<Purchase> findByName(String name) throws ServiceUnavailableException {

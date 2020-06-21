@@ -10,13 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.khayayphyu.dao.PurchaseOrderDao;
-import com.khayayphyu.domain.Customer;
 import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.Purchase;
 import com.khayayphyu.domain.PurchaseOrder;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
-import com.khayayphyu.service.CustomerService;
 import com.khayayphyu.service.ProductService;
 import com.khayayphyu.service.PurchaseOrderService;
 import com.khayayphyu.service.PurchaseService;
@@ -31,20 +29,14 @@ public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder>
 	private PurchaseService purchaseService;
 	
 	@Autowired
-	private CustomerService customerService;
-	
-	@Autowired
 	private PurchaseOrderDao purchaseOrderDao;
 	
 	public void ensurePurchaseOrderBoId(PurchaseOrder purchaseOrder) {
-		if(purchaseOrder.getProduct() == null || purchaseOrder.getCustomer() == null || purchaseOrder.getPurchase() == null) {
+		if(purchaseOrder.getProduct() == null || purchaseOrder.getPurchase() == null) {
 			return;
 		}
 		Product product = purchaseOrder.getProduct();
 		product.setBoId(productService.getNextBoId(EntityType.PRODUCT));
-		
-		Customer customer = purchaseOrder.getCustomer();
-		customer.setBoId(customerService.getNextBoId(EntityType.CUSTOMER));
 		
 		Purchase purchase = purchaseOrder.getPurchase();
 		purchase.setBoId(purchaseService.getNextBoId(EntityType.PURCHASE));
@@ -106,7 +98,6 @@ public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder>
 		if(purchaseOrder == null) {
 			return;
 		}	
-		customerService.hibernateInitializeCustomer(purchaseOrder.getCustomer());
 		productService.hibernateInitializeProduct(purchaseOrder.getProduct());
 	}
 
