@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Hibernate;
@@ -13,11 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.khayayphyu.dao.SaleDao;
+import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.Sale;
 import com.khayayphyu.domain.SaleOrder;
 import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
+import com.khayayphyu.service.ProductService;
 import com.khayayphyu.service.SaleOrderService;
 import com.khayayphyu.service.SaleService;
 
@@ -27,6 +30,9 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 
 	@Autowired
 	private SaleDao saleDao;
+
+	@Autowired
+	private ProductService productService;
 
 	@Autowired
 	private SaleOrderService saleOrderService;
@@ -71,12 +77,18 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 
 	@Override
 	public Sale findByBoId(String boId) throws ServiceUnavailableException {
-		String queryStr = "select sale from Sale sale where sale.boId=:dataInput and sale.status != :status";
+		return findByBoId(boId, this::hibernateInitializeSale);
+	}
+
+	@Override
+	public Sale findByBoId(String boId, Consumer<Sale> initializer) {
+		String queryStr = "from Sale sale where sale.boId=:dataInput and sale.status != :status";
 		List<Sale> saleList = saleDao.findByString(queryStr, boId);
 		if (CollectionUtils.isEmpty(saleList))
 			return null;
-		hibernateInitializeSaleList(saleList);
-		return saleList.get(0);
+		Sale sale = saleList.get(0);
+		initializer.accept(sale);
+		return sale;
 	}
 
 	@Override
@@ -97,13 +109,30 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 	}
 
 	@Transactional(readOnly = false)
+	public boolean syncWithDb(Sale sale) {
+		List<Product> productList = new ArrayList<>();
+		for (SaleOrder saleOrder : sale.getSaleOrderList()) {
+			Product product = saleOrder.getProduct();
+			try {
+				product = productService.findByBoId(product.getBoId());
+			} catch (ServiceUnavailableException e) {
+				
+			}
+			product.setQuantity(product.getQuantity() - saleOrder.getQuantity());
+			if (product.getQuantity() < 0)
+				return false;
+			productList.add(product);
+		}
+		return productService.save(productList);
+	}
+
+	@Transactional(readOnly = false)
 	@Override
 	public void deleteSale(Sale sale) throws ServiceUnavailableException {
 		sale.setStatus(Status.DELETED);
 		saveSale(sale);
 	}
 
-	@Override
 	public void hibernateInitializeSaleList(List<Sale> saleList) {
 		Hibernate.initialize(saleList);
 		if (CollectionUtils.isEmpty(saleList))
@@ -113,7 +142,6 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 		}
 	}
 
-	@Override
 	public void hibernateInitializeSale(Sale sale) {
 		Hibernate.initialize(sale);
 		if (sale == null)
@@ -135,34 +163,34 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 		Map<String, List<SaleOrder>> saleOrderMap = groupSaleOrderByProduct(saleOrderList);
 		return countQuantityByProduct(saleOrderMap);
 	}
-	
+
 	private List<SaleOrder> mergeSaleOrderOfSaleList(List<Sale> saleList) {
 		List<SaleOrder> saleOrderList = new ArrayList<>();
-		for(Sale sale: saleList) {
+		for (Sale sale : saleList) {
 			saleOrderList.addAll(sale.getSaleOrderList());
 		}
 		return saleOrderList;
 	}
-	
+
 	private Map<String, Integer> countQuantityByProduct(Map<String, List<SaleOrder>> saleOrderMap) {
-		
+
 		Map<String, Integer> resultMap = new HashMap<>();
-		for(List<SaleOrder> list : saleOrderMap.values()) {
+		for (List<SaleOrder> list : saleOrderMap.values()) {
 			int count = 0;
-			for(SaleOrder so : list) {
+			for (SaleOrder so : list) {
 				count += so.getQuantity();
 			}
 			resultMap.put(list.get(0).getProduct().getProductName(), count);
 		}
 		return resultMap;
 	}
-	
+
 	private Map<String, List<SaleOrder>> groupSaleOrderByProduct(List<SaleOrder> saleOrderList) {
 		Map<String, List<SaleOrder>> saleOrderMap = new HashMap<>();
-		for(SaleOrder saleOrder : saleOrderList) {
+		for (SaleOrder saleOrder : saleOrderList) {
 			List<SaleOrder> list = saleOrderMap.get(saleOrder.getProduct().getBoId());
-			if(list == null) {
-				list =new ArrayList<>();
+			if (list == null) {
+				list = new ArrayList<>();
 				saleOrderMap.put(saleOrder.getProduct().getBoId(), list);
 			}
 			list.add(saleOrder);

@@ -39,7 +39,6 @@ public class SaleServiceTest extends ServiceTest {
 		
 		SaleOrder saleOrder = new SaleOrder();
 		saleOrder.setBoId(SystemConstant.BOID_REQUIRED);
-		saleOrder.setPeckagingType(PackingType.CARD);
 		saleOrder.setSale(sale);
 		sale.getSaleOrderList().add(saleOrder);
 		

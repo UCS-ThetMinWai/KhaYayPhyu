@@ -5,13 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.khayayphyu.domain.constant.PackingType;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.khayayphyu.domain.jsonviews.DetailView;
+import com.khayayphyu.domain.jsonviews.SummaryView;
+import com.khayayphyu.domain.jsonviews.Views;
 
 @Entity
 @Table(name = "saleOrder")
@@ -23,22 +23,24 @@ public class SaleOrder extends AbstractEntity {
 	private Sale sale;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonView(Views.InnerSummary.class)
 	private Product product;
-	
+
+	@JsonView(SummaryView.class)
 	@Column(name = "price")
 	private int price;
 
+	@JsonView(SummaryView.class)
 	@Column(name = "amount")
 	private int amount;
 
+	@JsonView(SummaryView.class)
 	@Column(name = "weight")
 	private double weight;
 
+	@JsonView(SummaryView.class)
 	@Column(name = "quantity")
 	private int quantity;
-
-	@Column(name = "peckagingType")
-	private PackingType peckagingType;
 
 	public SaleOrder() {
 		super();
@@ -76,14 +78,6 @@ public class SaleOrder extends AbstractEntity {
 		this.product = product;
 	}
 
-	public PackingType getPeckagingType() {
-		return peckagingType;
-	}
-
-	public void setPeckagingType(PackingType peckagingType) {
-		this.peckagingType = peckagingType;
-	}
-
 	public int getAmount() {
 		return amount;
 	}
@@ -100,7 +94,4 @@ public class SaleOrder extends AbstractEntity {
 		this.price = price;
 	}
 
-	public String toString() {
-		return new ToStringBuilder(this).append(peckagingType).toString();
-	}
 }

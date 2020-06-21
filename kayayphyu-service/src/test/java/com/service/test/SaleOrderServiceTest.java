@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.Sale;
 import com.khayayphyu.domain.SaleOrder;
-import com.khayayphyu.domain.constant.PackingType;
 import com.khayayphyu.domain.constant.SystemConstant;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.SaleOrderService;
@@ -25,7 +24,6 @@ public class SaleOrderServiceTest extends ServiceTest {
 	public void testSaveSaleOrder() {
 		SaleOrder saleOrder = new SaleOrder();
 		saleOrder.setBoId(SystemConstant.BOID_REQUIRED);
-		saleOrder.setPeckagingType(PackingType.CARD);
 		saleOrder.setWeight(20.5);
 		saleOrder.setQuantity(12);
 		saleOrder.setAmount(4000);
@@ -41,7 +39,6 @@ public class SaleOrderServiceTest extends ServiceTest {
 		Product product = new Product();
 		product.setId(1);
 		saleOrder.setProduct(product);
-		
 		Sale sale = new Sale(); // saleService.find
 		sale.setId(2);
 		saleOrder.setSale(sale);

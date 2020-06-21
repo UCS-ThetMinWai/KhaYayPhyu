@@ -21,38 +21,48 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.khayayphyu.domain.constant.PackingType;
+import com.khayayphyu.domain.jsonviews.DetailView;
+import com.khayayphyu.domain.jsonviews.SummaryView;
 
 @Entity
 @Table(name = "product")
 public class Product extends AbstractEntity {
 
+	@JsonView(SummaryView.class)
 	@Column(name = "productName")
 	private String productName;
 
 	@ManyToMany
+	@JsonView(DetailView.class)
 	private List<Product> productList;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@JsonView(SummaryView.class)
 	private SalePrice salePrice;
 	
+	@JsonView(SummaryView.class)
 	@OneToOne(cascade = CascadeType.ALL)
 	private PurchasePrice purchasePrice;
 
+	@JsonView(SummaryView.class)
 	@Column(name = "quantity")
 	private int quantity;
 
 	@Column(name = "peckagingType")
 	@Enumerated(EnumType.STRING)
+	@JsonView(SummaryView.class)
 	private PackingType packagingType;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "peckagingDate")
+	@JsonView(SummaryView.class)
 	private Date packagingDate;
 
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonView(DetailView.class)
+	@OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
 	private List<SalePrice> salePriceHistory;
 	
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonView(DetailView.class)
+	@OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
 	private List<PurchasePrice> purchasePriceHistory;
 
 	public Product() {

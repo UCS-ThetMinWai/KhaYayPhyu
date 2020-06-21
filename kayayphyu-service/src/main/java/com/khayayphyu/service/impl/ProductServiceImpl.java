@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 
 	@Autowired
 	private PurchasePriceService purchasePriceService;
+
+	private static Logger logger = Logger.getLogger(ProductServiceImpl.class);
 
 	public static final Consumer<Product> productInitializer = product -> {
 		if (product == null)
@@ -87,11 +90,11 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 		}
 		return true;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = false)
 	public boolean updatePurchaseAmount(Product product, int amount) {
-		if(product == null || amount < 0) {
+		if (product == null || amount < 0) {
 			return false;
 		}
 		PurchasePrice purchasePrice = PurchasePrice.create(amount);
@@ -116,40 +119,21 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 		}
 	}
 
+	@Transactional(readOnly = false)
+	public boolean save(List<Product> productList) {
+		for (Product product : productList) {
+			try {
+				saveExistingProduct(product);
+			} catch (ServiceUnavailableException e) {
+				logger.error("Can't save product :" + product.getBoId());
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private void saveExistingProduct(Product product) throws ServiceUnavailableException {
-		Product oldProduct = findByBoId(product.getBoId());
-		productDao.clearSession();
-		if (product.isSameSalePrice(oldProduct)) {
-			productDao.saveOrUpdate(product);
-		} else {
-			// product.setBoId(getNextBoId(EntityType.PRODUCT));
-
-			SalePrice salePrice = product.getSalePrice();
-			String salePriceBoId = salePrice.getBoId();
-			salePrice.setId(0);
-			salePrice.setBoId(priceService.getNextBoId(EntityType.PRICE));
-
-			SalePrice oldSalePrice = oldProduct.getSalePrice();
-			oldSalePrice.setProduct(product);
-			oldSalePrice.setBoId(salePriceBoId);
-			product.getSalePriceHistory().add(oldSalePrice);
-			productDao.saveOrUpdate(product);
-		}
-
-		if (product.isSamePurchaseePrice(oldProduct)) {
-			productDao.saveOrUpdate(product);
-		} else {
-			PurchasePrice purchasePrice = product.getPurchasePrice();
-			String purchasePriceBoId = purchasePrice.getBoId();
-			purchasePrice.setId(0);
-			purchasePrice.setBoId(purchasePriceService.getNextBoId(EntityType.PRICE));
-
-			PurchasePrice oldPurchasePrice = oldProduct.getPurchasePrice();
-			oldPurchasePrice.setProduct(product);
-			oldPurchasePrice.setBoId(purchasePriceBoId);
-			product.getPurchasePriceHistory().add(oldPurchasePrice);
-			productDao.save(product);
-		}
+		productDao.saveOrUpdate(product);
 	}
 
 	private void saveNewProduct(Product product) throws ServiceUnavailableException {

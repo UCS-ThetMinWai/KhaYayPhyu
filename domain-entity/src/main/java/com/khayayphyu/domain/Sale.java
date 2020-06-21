@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.khayayphyu.domain.jsonviews.DetailView;
 import com.khayayphyu.domain.jsonviews.SummaryView;
+import com.khayayphyu.domain.jsonviews.Views;
 
 @Entity
 @Table(name="sale")
@@ -26,7 +27,7 @@ public class Sale extends AbstractEntity {
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Customer customer;
 	
-	@JsonView(DetailView.class)
+	@JsonView(Views.Comprehensive.class)
 	@OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<SaleOrder> saleOrderList;
 	

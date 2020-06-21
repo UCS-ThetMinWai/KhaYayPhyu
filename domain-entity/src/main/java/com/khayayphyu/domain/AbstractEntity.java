@@ -10,12 +10,14 @@ import javax.persistence.MappedSuperclass;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant;
+import com.khayayphyu.domain.jsonviews.SummaryView;
 
 @MappedSuperclass
 public abstract class AbstractEntity {
-	
+
 	public AbstractEntity() {
 		super();
 	}
@@ -23,14 +25,17 @@ public abstract class AbstractEntity {
 	public AbstractEntity(String boId) {
 		this.boId = boId;
 	}
-	
+
 	@Id
 	@GeneratedValue
+	@JsonView(SummaryView.class)
 	private long id;
-	
+
+	@JsonView(SummaryView.class)
 	@Enumerated(EnumType.STRING)
 	private Status status;
 
+	@JsonView(SummaryView.class)
 	private String boId;
 
 	public long getId() {
@@ -56,13 +61,13 @@ public abstract class AbstractEntity {
 	public void setBoId(String boId) {
 		this.boId = boId;
 	}
-	
+
 	public void setBoId(String boId, Supplier<String> boIdGengenator) {
-		if(boId == SystemConstant.BOID_REQUIRED)
+		if (boId == SystemConstant.BOID_REQUIRED)
 			boId = boIdGengenator.get();
 		this.boId = boId;
 	}
-	
+
 	public boolean sameBoId(AbstractEntity entity) {
 		if (entity == null)
 			return false;
@@ -70,15 +75,15 @@ public abstract class AbstractEntity {
 			return false;
 		return (this.getBoId().equals(entity.getBoId()));
 	}
-	
+
 	public boolean isBoIdRequired() {
 		return boId == null || SystemConstant.BOID_REQUIRED.equals(getBoId());
 	}
-	
+
 	public boolean isNew() {
 		return isBoIdRequired();
 	}
-	
+
 	public String toString() {
 		return new ToStringBuilder(this).append(boId).toString();
 	}
