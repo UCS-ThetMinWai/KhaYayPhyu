@@ -32,9 +32,9 @@ public class Product extends AbstractEntity {
 	@Column(name = "productName")
 	private String productName;
 
-	@ManyToMany
+	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
 	@JsonView(DetailView.class)
-	private List<Product> productList;
+	private List<Item> itemList;
 
 	@JsonView(SummaryView.class)
 	@OneToOne
@@ -82,12 +82,12 @@ public class Product extends AbstractEntity {
 		super(boId);
 	}
 
-	public List<Product> getProductList() {
-		return productList;
+	public List<Item> getItemList() {
+		return itemList;
 	}
 
-	public void setProductList(List<Product> productList) {
-		this.productList = productList;
+	public void setItemList(List<Item> itemList) {
+		this.itemList = itemList;
 	}
 
 	public List<SalePrice> getSalePriceHistory() {

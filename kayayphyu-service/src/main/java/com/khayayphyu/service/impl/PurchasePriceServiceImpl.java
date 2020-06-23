@@ -3,6 +3,7 @@ package com.khayayphyu.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +15,11 @@ import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.PurchasePriceService;
 
 @Transactional(readOnly = true)
-@Service("purchasePriceService")
+@Service
 public class PurchasePriceServiceImpl extends AbstractServiceImpl<PurchasePrice> implements PurchasePriceService {
-	PurchasePriceDao purchasePriceDao;
+
+	@Autowired
+	private PurchasePriceDao purchasePriceDao;
 
 	@Transactional(readOnly = false)
 	@Override

@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
+import com.khayayphyu.domain.jsonviews.SummaryView;
 import com.khayayphyu.resource.ProductServiceResource;
 import com.khayayphyu.service.ProductService;
 import com.khayayphyu.service.impl.ProductServiceImpl;
@@ -29,20 +32,21 @@ public class ProductServiceResourceImpl extends AbstractServiceResourceImpl impl
 
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@Override
-	public boolean create(HttpServletRequest request, @RequestBody Product product) {
+	public boolean create(@RequestBody Product product) {
+		product.getItemList().forEach(item -> item.setParent(product));
 		try {
 			productService.saveProduct(product);
 		} catch (ServiceUnavailableException e) {
-			e.printStackTrace();
+			logger.error("Can't save product", e);
+			return false;
 		}
 		return true;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/{boId}")
 	@Override
-	public Product findByProductBoId(HttpServletRequest request, @PathVariable String boId)
-			throws ServiceUnavailableException {
-		return productService.findByBoId(boId, ProductServiceImpl.detailInitializer);
+	public Product findByProductBoId(HttpServletRequest request, @PathVariable String boId) throws ServiceUnavailableException {
+		return productService.findByBoId(boId, ProductServiceImpl::detailInitializer);
 	}
 
 	@RequestMapping(method = RequestMethod.PUT, value = "/sale/{boId}/{amount}")
@@ -51,7 +55,7 @@ public class ProductServiceResourceImpl extends AbstractServiceResourceImpl impl
 		productService.updateSaleAmount(product, saleAmount);
 		return product;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.PUT, value = "/purchase/{boId}/{amount}")
 	public Product updatePurchaseAmount(@PathVariable("boId") String productBoId, @PathVariable("amount") int purchaseAmount) {
 		Product product = getDetailProduct(productBoId);
@@ -59,6 +63,7 @@ public class ProductServiceResourceImpl extends AbstractServiceResourceImpl impl
 		return product;
 	}
 
+	@JsonView(SummaryView.class)
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@Override
 	public List<Product> getAllProduct(HttpServletRequest request) throws ServiceUnavailableException {
@@ -74,7 +79,7 @@ public class ProductServiceResourceImpl extends AbstractServiceResourceImpl impl
 
 	private Product getDetailProduct(String boId) {
 		try {
-			return productService.findByBoId(boId, ProductServiceImpl.detailInitializer);
+			return productService.findByBoId(boId, ProductServiceImpl::detailInitializer);
 		} catch (ServiceUnavailableException e) {
 			return null;
 		}

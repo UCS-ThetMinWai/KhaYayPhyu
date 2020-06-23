@@ -8,7 +8,7 @@ import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 
 public interface ProductServiceResource {
-	boolean create(HttpServletRequest request, Product product);
+	boolean create(Product product);
 
 	boolean deleteProduct(String boId) throws ServiceUnavailableException;
 

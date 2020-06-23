@@ -10,6 +10,7 @@ import javax.persistence.MappedSuperclass;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant;
@@ -76,10 +77,12 @@ public abstract class AbstractEntity {
 		return (this.getBoId().equals(entity.getBoId()));
 	}
 
+	@JsonIgnore
 	public boolean isBoIdRequired() {
 		return boId == null || SystemConstant.BOID_REQUIRED.equals(getBoId());
 	}
 
+	@JsonIgnore
 	public boolean isNew() {
 		return isBoIdRequired();
 	}

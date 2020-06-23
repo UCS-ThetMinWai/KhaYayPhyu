@@ -23,7 +23,6 @@ public class PurchaseOrderServiceTest extends ServiceTest {
 	public void testSavePurchaseOrder() {
 		PurchaseOrder purchaseOrder = new PurchaseOrder();
 		purchaseOrder.setBoId(SystemConstant.BOID_REQUIRED);
-		purchaseOrder.setWeight(24.5);
 		purchaseOrder.setQuantity(40);
 		try {
 			purchaseOrder.setDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-4-13"));
@@ -37,7 +36,6 @@ public class PurchaseOrderServiceTest extends ServiceTest {
 		
 		Customer customer = new Customer();
 		customer.setId(1);
-		purchaseOrder.setCustomer(customer);
 		
 		Purchase purchase = new Purchase();
 		purchase.setId(1);

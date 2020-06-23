@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.khayayphyu.dao.ProductDao;
+import com.khayayphyu.domain.Item;
 import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.PurchasePrice;
 import com.khayayphyu.domain.SalePrice;
@@ -30,7 +31,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 	private ProductDao productDao;
 
 	@Autowired
-	private SalePriceService priceService;
+	private SalePriceService salePriceService;
 
 	@Autowired
 	private PurchasePriceService purchasePriceService;
@@ -44,33 +45,45 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 		Hibernate.initialize(product.getSalePrice());
 		product.setSalePriceHistory(null);
 		product.setPurchasePriceHistory(null);
-		product.setProductList(null);
 	};
 
-	public static final Consumer<Product> detailInitializer = product -> {
+	public static final void detailInitializer(Product product) {
 		if (product == null)
 			return;
 		Hibernate.initialize(product.getPurchasePrice());
 		Hibernate.initialize(product.getSalePrice());
 		Hibernate.initialize(product.getPurchasePriceHistory());
 		Hibernate.initialize(product.getSalePriceHistory());
-		Hibernate.initialize(product.getProductList());
+		Hibernate.initialize(product.getItemList());
+		initializeItem(product.getItemList());
 	};
+
+	private static void initializeItem(List<Item> itemList) {
+		Hibernate.initialize(itemList);
+		for (Item item : itemList) {
+			Hibernate.initialize(item.getProduct());
+			Product product = item.getProduct();
+			product.setItemList(null); // for json generation
+			// product.setSalePrice(null);
+			// product.setPurchasePrice(null);
+			product.setSalePriceHistory(null);
+			product.setPurchasePriceHistory(null);
+		}
+	}
 
 	public void ensuredProductBoId(Product product) {
 		if (product.getSalePriceHistory() == null || product.getPurchasePriceHistory() == null)
 			return;
-		if (CollectionUtils.isEmpty(product.getPurchasePriceHistory())
-				|| CollectionUtils.isEmpty(product.getSalePriceHistory()))
+		if (CollectionUtils.isEmpty(product.getPurchasePriceHistory()) || CollectionUtils.isEmpty(product.getSalePriceHistory()))
 			return;
 		for (SalePrice price : product.getSalePriceHistory()) {
 			if (price.isBoIdRequired()) {
-				price.setBoId(priceService.getNextBoId(EntityType.PRICE));
+				price.setBoId(salePriceService.getNextBoId(EntityType.PRICE));
 			}
 		}
 		for (PurchasePrice purchasePrice : product.getPurchasePriceHistory()) {
 			if (purchasePrice.isNew()) {
-				purchasePrice.setBoId(priceService.getNextBoId(EntityType.PRICE));
+				purchasePrice.setBoId(salePriceService.getNextBoId(EntityType.PRICE));
 			}
 		}
 	}
@@ -82,7 +95,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 			return false;
 		SalePrice price = SalePrice.create(amount);
 		try {
-			priceService.savePrice(price);
+			salePriceService.savePrice(price);
 			product.addNewSalePrice(price);
 			productDao.saveOrUpdate(product);
 		} catch (ServiceUnavailableException e) {
@@ -137,6 +150,8 @@ public class ProductServiceImpl extends AbstractServiceImpl<Product> implements 
 	}
 
 	private void saveNewProduct(Product product) throws ServiceUnavailableException {
+		salePriceService.savePrice(product.getSalePrice());
+		purchasePriceService.savePrice(product.getPurchasePrice());
 		product.setBoId(getNextBoId(EntityType.PRODUCT));
 		product.setStatus(Status.OPEN);
 		ensuredProductBoId(product);
