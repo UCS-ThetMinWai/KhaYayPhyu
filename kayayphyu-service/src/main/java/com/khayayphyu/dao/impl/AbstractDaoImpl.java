@@ -18,15 +18,10 @@ import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 
 public class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E, Serializable> {
-	
-	private Class<E> entityClass;
+
 	private int pageSize = 30;
 
 	private static Logger logger = Logger.getLogger(AbstractDaoImpl.class);
-
-	protected AbstractDaoImpl(Class<E> entityClass) {
-		this.entityClass = entityClass;
-	}
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -35,20 +30,18 @@ public class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E
 		return sessionFactory.getCurrentSession();
 	}
 
-
 	public void saveOrUpdate(E e) throws ServiceUnavailableException {
 		try {
-		Session session = getCurrentSession();
-		session.saveOrUpdate(e);
-		session.flush();
-		session.evict(e);
-	} catch (CannotCreateTransactionException exception) {
-		logger.error(exception);
-		throw new ServiceUnavailableException(exception);
-	} catch (Exception exception) {
-		logger.error("\r\nException in save : " , exception);
-		throw new ServiceUnavailableException(exception);
-	}
+			Session session = getCurrentSession();
+			session.saveOrUpdate(e);
+			session.flush();
+		} catch (CannotCreateTransactionException exception) {
+			logger.error(exception);
+			throw new ServiceUnavailableException(exception);
+		} catch (Exception exception) {
+			logger.error("\r\nException in save : ", exception);
+			throw new ServiceUnavailableException(exception);
+		}
 	}
 
 	public List<E> findByString(String queryString, String data) {
@@ -62,10 +55,19 @@ public class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E
 		return entityList;
 	}
 
+	public List<E> findByStringWithoutStatus(String queryString, Object data) {
+		List<E> entityList;
+		Query query = getCurrentSession().createQuery(queryString).setResultTransformer(RootEntityResultTransformer.INSTANCE);
+		query.setParameter("dataInput", data);
+		entityList = query.list();
+		for (E entity : entityList)
+			Hibernate.initialize(entity);
+		return entityList;
+	}
+
 	public List<E> findByStringInteger(String queryString, String data, int data1) {
 		List<E> entityList;
-		Query query = getCurrentSession().createQuery(queryString).setParameter("dataInput", data)
-				.setParameter("dataInput1", data1);
+		Query query = getCurrentSession().createQuery(queryString).setParameter("dataInput", data).setParameter("dataInput1", data1);
 		entityList = query.list();
 		for (E entity : entityList)
 			Hibernate.initialize(entity);
@@ -83,8 +85,7 @@ public class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E
 
 	public List<E> findByString(String queryString, String data, String data1) {
 		List<E> entityList;
-		Query query = getCurrentSession().createQuery(queryString).setParameter("dataInput", data)
-				.setParameter("dataInput1", data1);
+		Query query = getCurrentSession().createQuery(queryString).setParameter("dataInput", data).setParameter("dataInput1", data1);
 		entityList = query.list();
 		for (E entity : entityList)
 			Hibernate.initialize(entity);
@@ -93,21 +94,20 @@ public class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E
 
 	public List<E> findByIntegerString(String queryString, Integer data, String data1) {
 		List<E> entityList;
-		Query query = getCurrentSession().createQuery(queryString).setParameter("dataInput", data)
-				.setParameter("dataInput1", data1);
+		Query query = getCurrentSession().createQuery(queryString).setParameter("dataInput", data).setParameter("dataInput1", data1);
 		entityList = query.list();
 		for (E entity : entityList)
 			Hibernate.initialize(entity);
 		return entityList;
 	}
-	
+
 	@Override
 	public List<E> findByDate(String queryString, Date startDate, Date endDate) {
 		List<E> entityList;
 		Query query = getCurrentSession().createQuery(queryString).setParameter("dataInput", startDate).setParameter("dataInput1", endDate);
 		entityList = query.list();
-		for(E entity : entityList)
-			Hibernate.initialize(entity);	
+		for (E entity : entityList)
+			Hibernate.initialize(entity);
 		return entityList;
 	}
 
@@ -119,13 +119,13 @@ public class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E
 
 		return count;
 	}
-	
+
 	public List<E> getActiveObjects(String queryStr) {
 		Query query = getCurrentSession().createQuery(queryStr);
 		query.setParameter("status", Status.DELETED);
 		return query.list();
 	}
-	
+
 	public void clearSession() {
 		getCurrentSession().clear();
 	}

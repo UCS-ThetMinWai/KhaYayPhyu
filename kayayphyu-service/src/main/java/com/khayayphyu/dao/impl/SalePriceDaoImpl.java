@@ -9,10 +9,7 @@ import com.khayayphyu.domain.SalePrice;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 @Repository
 public class SalePriceDaoImpl extends AbstractDaoImpl<SalePrice, Serializable> implements SalePriceDao {
-	protected SalePriceDaoImpl() {
-		super(SalePrice.class);
-	}
-
+	
 	public void save(SalePrice price) throws ServiceUnavailableException {
 		saveOrUpdate(price);
 	}

@@ -14,10 +14,6 @@ import com.khayayphyu.domain.exception.ServiceUnavailableException;
 @Transactional(readOnly = true)
 public class CustomerDaoImpl extends AbstractDaoImpl<Customer, Serializable> implements CustomerDao {
 	
-	protected CustomerDaoImpl() {
-		super(Customer.class);
-	}
-
 	@Transactional(readOnly = false)
 	public void save(Customer customer) throws ServiceUnavailableException {
 		saveOrUpdate(customer);

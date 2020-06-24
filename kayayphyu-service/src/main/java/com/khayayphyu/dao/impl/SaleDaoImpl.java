@@ -10,10 +10,6 @@ import com.khayayphyu.domain.exception.ServiceUnavailableException;
 @Repository
 public class SaleDaoImpl extends AbstractDaoImpl<Sale, Serializable> implements SaleDao {
 	
-	protected SaleDaoImpl() {
-		super(Sale.class);
-	}
-
 	public void save(Sale sale) throws ServiceUnavailableException {
 		saveOrUpdate(sale);
 	}

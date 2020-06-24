@@ -1,5 +1,6 @@
 package com.khayayphyu.resource.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.khayayphyu.domain.Item;
 import com.khayayphyu.domain.Product;
+import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.domain.jsonviews.SummaryView;
 import com.khayayphyu.resource.ProductServiceResource;
+import com.khayayphyu.service.ItemService;
 import com.khayayphyu.service.ProductService;
 import com.khayayphyu.service.impl.ProductServiceImpl;
 
@@ -30,10 +33,23 @@ public class ProductServiceResourceImpl extends AbstractServiceResourceImpl impl
 	@Autowired
 	private ProductService productService;
 
+	@Autowired
+	private ItemService itemService;
+
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@Override
 	public boolean create(@RequestBody Product product) {
-		product.getItemList().forEach(item -> item.setParent(product));
+		return product.isNew() ? save(product) : updateProduct(product);
+	}
+
+	private boolean updateProduct(Product product) {
+		logger.info("here" + product.getBoId());
+		itemService.removeItemListOf(product);
+		return save(product);
+	}
+
+	private boolean save(Product product) {
+		product.getItemList().forEach(item -> resetItem(item, product));
 		try {
 			productService.saveProduct(product);
 		} catch (ServiceUnavailableException e) {
@@ -41,6 +57,12 @@ public class ProductServiceResourceImpl extends AbstractServiceResourceImpl impl
 			return false;
 		}
 		return true;
+	}
+
+	private void resetItem(Item item, Product parent) {
+		item.setParent(parent);
+		item.setStatus(Status.OPEN);
+		item.setId(0);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/{boId}")

@@ -16,7 +16,6 @@ public class Item extends AbstractEntity {
 	@ManyToOne
 	private Product parent;
 
-	
 	@OneToOne
 	private Product product;
 

@@ -11,11 +11,6 @@ import com.khayayphyu.domain.exception.ServiceUnavailableException;
 @Component
 public class PurchasePriceDaoImpl extends AbstractDaoImpl<PurchasePrice, Serializable> implements PurchasePriceDao {
 
-	protected PurchasePriceDaoImpl() {
-		super(PurchasePrice.class);
-
-	}
-
 	@Override
 	public void save(PurchasePrice purchasePrice) throws ServiceUnavailableException {
 		saveOrUpdate(purchasePrice);
