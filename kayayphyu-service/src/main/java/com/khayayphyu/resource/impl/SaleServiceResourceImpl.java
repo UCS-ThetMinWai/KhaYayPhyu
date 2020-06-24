@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.khayayphyu.domain.Sale;
+import com.khayayphyu.domain.SaleOrder;
+import com.khayayphyu.domain.SalePrice;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.domain.jsonviews.SummaryView;
 import com.khayayphyu.domain.jsonviews.Views;
 import com.khayayphyu.resource.SaleServiceResource;
+import com.khayayphyu.service.SalePriceService;
 import com.khayayphyu.service.SaleService;
 
 @RestController
@@ -29,10 +32,26 @@ public class SaleServiceResourceImpl extends AbstractServiceResourceImpl impleme
 
 	@Autowired
 	private SaleService saleService;
+	
+	@Autowired
+	private SalePriceService salePriceService;
+
+	private void updatePriceToSaleOrder(SaleOrder saleOrder)throws ServiceUnavailableException  {
+		SalePrice salePrice = salePriceService.findByProduct(saleOrder.getProduct());
+		saleOrder.setPrice(salePrice.getAmount());
+	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	@Override
 	public boolean createSale(@RequestBody Sale sale) throws ServiceUnavailableException {
+		sale.getSaleOrderList().forEach(arg0 -> {
+			try {
+				updatePriceToSaleOrder(arg0);
+			} catch (ServiceUnavailableException e) {
+				e.printStackTrace();
+			}
+		});
+
 		sale.getSaleOrderList().forEach(so -> so.setSale(sale));
 		if (!saleService.syncWithDb(sale)) {
 			return false;

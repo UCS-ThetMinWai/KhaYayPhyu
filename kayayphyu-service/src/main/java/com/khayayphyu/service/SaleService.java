@@ -32,7 +32,7 @@ public interface SaleService extends AbstractService<Sale> {
 			Hibernate.initialize(saleOrder);
 			Hibernate.initialize(saleOrder.getProduct());
 			Product product = saleOrder.getProduct();
-			product.setSalePrice(null);
+			product.setItemList(new ArrayList<>());
 		}
 	}
 }

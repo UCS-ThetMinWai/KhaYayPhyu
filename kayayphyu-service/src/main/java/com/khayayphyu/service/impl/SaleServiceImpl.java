@@ -56,18 +56,12 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 			sale.setStatus(Status.OPEN);
 			ensuredSaleBoId(sale);
 		}
-		if (sale.getBalance() == 0) {
-			sale.setStatus(Status.CLOSE);
-		} else {
-			sale.setStatus(Status.OPEN);
-		}
-
 		saleDao.save(sale);
 	}
 
 	@Override
 	public List<Sale> findByName(String name) throws ServiceUnavailableException {
-		String queryStr = "from Sale sale where sale.name=:dataInput";
+		String queryStr = "from Sale sale where sale.name=:dataInput and sale.status != :status";
 		List<Sale> saleList = saleDao.findByString(queryStr, name);
 		if (CollectionUtils.isEmpty(saleList))
 			return null;
@@ -103,7 +97,7 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 
 	@Override
 	public List<Sale> getAllSale() throws ServiceUnavailableException {
-		List<Sale> saleList = saleDao.getAll("From Sale sale");
+		List<Sale> saleList = saleDao.getActiveObjects("From Sale sale where sale.status!=:status");
 		hibernateInitializeSaleList(saleList);
 		return saleList;
 	}

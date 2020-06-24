@@ -15,10 +15,10 @@ import com.khayayphyu.service.SalePriceService;
 
 public class PriceServiceTest extends ServiceTest {
 	Logger logger = Logger.getLogger(PriceServiceTest.class);
-	
+
 	@Autowired
 	private SalePriceService priceService;
-	
+
 	@Test
 	public void testSavePrice() {
 		SalePrice price = new SalePrice();
@@ -38,5 +38,13 @@ public class PriceServiceTest extends ServiceTest {
 		} catch (ServiceUnavailableException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Test
+	public void test1() throws Exception {
+		Product product = new Product();
+		product.setBoId("PRODUCT00000002");
+		SalePrice salePrice = priceService.findByProduct(product);
+		logger.info("Sale price id :" + salePrice.getId());
 	}
 }

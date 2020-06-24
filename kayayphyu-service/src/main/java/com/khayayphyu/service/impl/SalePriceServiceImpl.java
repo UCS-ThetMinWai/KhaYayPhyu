@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.khayayphyu.dao.SalePriceDao;
+import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.SalePrice;
 import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
@@ -52,8 +53,18 @@ public class SalePriceServiceImpl extends AbstractServiceImpl<SalePrice> impleme
 
 	@Override
 	public List<SalePrice> getAllPrice() throws ServiceUnavailableException {
-		List<SalePrice> priceList = priceDao.getAll("from SalePrice price");
+		List<SalePrice> priceList = priceDao.getAll("from SalePrice price and price.status != :status");
 		return priceList;
+	}
+
+	@Override
+	public SalePrice findByProduct(Product product) throws ServiceUnavailableException {
+		String queryStr = "from Product product where product.boId=:dataInput";
+		//priceDao.findByString(queryStr);
+		String test = "select p.salePrice from Product p where p.boId=:dataInput and p.status!=:status";
+		//String test ="from SalePrice sp join Product p.id where p.boId=:dataInput and sp.status != :status";
+		List<SalePrice> salePriceList = priceDao.findByString(test, product.getBoId());
+		return salePriceList.get(0);
 	}
 
 }
