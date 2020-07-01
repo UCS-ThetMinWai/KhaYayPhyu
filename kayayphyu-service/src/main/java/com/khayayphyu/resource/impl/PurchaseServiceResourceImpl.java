@@ -1,7 +1,10 @@
 package com.khayayphyu.resource.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,10 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.khayayphyu.domain.Purchase;
+import com.khayayphyu.domain.PurchaseOrder;
+import com.khayayphyu.domain.PurchasePrice;
+import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.domain.jsonviews.SummaryView;
 import com.khayayphyu.domain.jsonviews.Views;
 import com.khayayphyu.resource.PurchaseServiceResource;
+import com.khayayphyu.service.PurchaseOrderService;
+import com.khayayphyu.service.PurchasePriceService;
 import com.khayayphyu.service.PurchaseService;
 import com.khayayphyu.service.impl.PurchaseServiceImpl;
 
@@ -30,20 +38,73 @@ public class PurchaseServiceResourceImpl extends AbstractServiceResourceImpl imp
 
 	@Autowired
 	private PurchaseService purchaseService;
+	
+	@Autowired
+	private PurchaseOrderService purchaseOrderService;
+	
+	@Autowired
+	private PurchasePriceService purchasePriceService;
 
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@Override
-	public Boolean createPurchase(HttpServletRequest request, @RequestBody Purchase purchase) {
-		purchase.getPurchaseOrderList().forEach(po -> {
-			po.setPurchase(purchase);
-			po.setPrice(po.getProduct().getPurchasePrice().getAmount());
-		});
+	public Boolean createPurchase(HttpServletRequest request, @RequestBody Purchase purchase)throws ServiceUnavailableException {
+		removeDupliatePurchaseOrder(purchase.getPurchaseOrderList());
+		updatePriceToPurchaseOrder(purchase.getPurchaseOrderList().get(0));
+		return purchase.isNew() ? save(purchase):updatePurchase(purchase);
+	}
+	
+	private boolean updatePurchase(Purchase purchase)throws ServiceUnavailableException {
+		purchaseOrderService.removePurchaseOrderListOf(purchase);
+		return save(purchase);
+	}
+
+	private boolean save(Purchase purchase) {
+		purchase.getPurchaseOrderList().forEach(purchaseOrder -> resetPurchaseOrder(purchaseOrder, purchase));
 		try {
+			purchase.getPurchaseOrderList().forEach(po -> po.setPurchase(purchase));
+			if (!purchaseService.syncWithDb(purchase)) {
+				return false;
+			}
 			purchaseService.savePurchase(purchase);
 		} catch (ServiceUnavailableException e) {
 			return false;
 		}
 		return true;
+	}
+
+	private void resetPurchaseOrder(PurchaseOrder itPurchaseOrder, Purchase parent) {
+		itPurchaseOrder.setPurchase(parent);
+		itPurchaseOrder.setStatus(Status.OPEN);
+		itPurchaseOrder.setId(0);
+	}
+	
+	private void updatePriceToPurchaseOrder(PurchaseOrder purchaseOrder){
+		PurchasePrice purchasePrice;
+		
+		try {
+			purchasePrice = purchasePriceService.findByProduct(purchaseOrder.getProduct());
+			purchaseOrder.setPrice(purchasePrice.getAmount());
+			purchaseOrder.setAmount(purchaseOrder.getPrice() * purchaseOrder.getQuantity());
+		} catch (ServiceUnavailableException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private List<PurchaseOrder> removeDupliatePurchaseOrder(List<PurchaseOrder> purchaseOrderList) {
+		Map<String, PurchaseOrder> map = new HashMap<>();
+		purchaseOrderList.forEach(purchaseOrder -> {
+			String productBoId = purchaseOrder.getProduct().getBoId();
+			PurchaseOrder temp = map.get(productBoId);
+			if(temp == null) { //if duplicate product is null 
+				map.put(productBoId, purchaseOrder);
+			}else {
+				temp.setQuantity(temp.getQuantity() + purchaseOrder.getQuantity());
+			}
+		});
+		purchaseOrderList = new ArrayList<>();
+		purchaseOrderList.addAll(map.values());
+		return purchaseOrderList;
 	}
 
 	@Override

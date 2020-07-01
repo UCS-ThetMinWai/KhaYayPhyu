@@ -3,6 +3,7 @@ package com.khayayphyu.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import com.khayayphyu.service.SalePriceService;
 @Transactional(readOnly = true)
 @Service("salePriceService")
 public class SalePriceServiceImpl extends AbstractServiceImpl<SalePrice> implements SalePriceService {
+	Logger logger = Logger.getLogger(SalePriceServiceImpl.class);
 	
 	@Autowired
 	private SalePriceDao priceDao;
@@ -64,6 +66,7 @@ public class SalePriceServiceImpl extends AbstractServiceImpl<SalePrice> impleme
 		String test = "select p.salePrice from Product p where p.boId=:dataInput and p.status!=:status";
 		//String test ="from SalePrice sp join Product p.id where p.boId=:dataInput and sp.status != :status";
 		List<SalePrice> salePriceList = priceDao.findByString(test, product.getBoId());
+		logger.info("BoId: " + product.getBoId());
 		return salePriceList.get(0);
 	}
 

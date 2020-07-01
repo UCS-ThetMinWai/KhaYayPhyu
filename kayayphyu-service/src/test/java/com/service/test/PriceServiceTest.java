@@ -43,7 +43,7 @@ public class PriceServiceTest extends ServiceTest {
 	@Test
 	public void test1() throws Exception {
 		Product product = new Product();
-		product.setBoId("PRODUCT00000002");
+		product.setBoId("PRODUCT00000001");
 		SalePrice salePrice = priceService.findByProduct(product);
 		logger.info("Sale price id :" + salePrice.getId());
 	}

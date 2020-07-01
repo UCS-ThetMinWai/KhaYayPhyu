@@ -1,7 +1,10 @@
 package com.khayayphyu.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.khayayphyu.dao.PurchaseDao;
 import com.khayayphyu.domain.Customer;
+import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.Purchase;
 import com.khayayphyu.domain.PurchaseOrder;
 import com.khayayphyu.domain.User;
@@ -19,6 +23,7 @@ import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.CustomerService;
+import com.khayayphyu.service.ProductService;
 import com.khayayphyu.service.PurchaseOrderService;
 import com.khayayphyu.service.PurchaseService;
 import com.khayayphyu.service.UserService;
@@ -35,6 +40,9 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private ProductService productService;
+	
 	@Autowired
 	private PurchaseDao purchaseDao;
 
@@ -67,6 +75,24 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 		user.setBoId(userService.getNextBoId(EntityType.USER));
 	}
 
+	@Transactional(readOnly = false)
+	public boolean syncWithDb(Purchase purchase) {
+		List<Product> productList = new ArrayList<>();
+		for (PurchaseOrder purchaseOrder : purchase.getPurchaseOrderList()) {
+			Product product = purchaseOrder.getProduct();
+			try {
+				product = productService.findByBoId(product.getBoId());
+			} catch (ServiceUnavailableException e) {
+
+			}
+			product.setQuantity(product.getQuantity() + purchaseOrder.getQuantity());
+			if (product.getQuantity() < 0)
+				return false;
+			productList.add(product);
+		}
+		return productService.save(productList);
+	}
+
 	@Override
 	public List<Purchase> getAllPurchase() throws ServiceUnavailableException {
 		List<Purchase> purchaseList = purchaseDao.getAll("From Purchase purchase");
@@ -77,7 +103,7 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 	@Override
 	@Transactional(readOnly = false)
 	public void savePurchase(Purchase purchase) throws ServiceUnavailableException {
-		if (purchase.isBoIdRequired()) {
+		if (purchase.isNew()) {
 			purchase.setBoId(getNextBoId(EntityType.PURCHASE));
 			purchase.setStatus(Status.OPEN);
 
@@ -159,6 +185,48 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 			return null;
 		hibernateInitializePurchaseList(purchaseList);
 		return purchaseList;
+	}
+
+	@Override
+	public Map<String, Integer> monthlyPurchaseReport(Date startDate, Date endDate) throws ServiceUnavailableException {
+		List<Purchase> purchaseList = findByPeriod(startDate, endDate);
+		List<PurchaseOrder> purchaseOrderList = mergePurchaseOrderOfPurchaseList(purchaseList);
+		Map<String, List<PurchaseOrder>> purchaseOrderMap = groupPurchaseOrderByProduct(purchaseOrderList);
+		return countQuantityByProduct(purchaseOrderMap);
+	}
+
+	private List<PurchaseOrder> mergePurchaseOrderOfPurchaseList(List<Purchase> purchaseList) {
+		List<PurchaseOrder> purchaseOrderList = new ArrayList<>();
+		for (Purchase purchase : purchaseList) {
+			purchaseOrderList.addAll(purchase.getPurchaseOrderList());
+		}
+		return purchaseOrderList;
+	}
+
+	private Map<String, Integer> countQuantityByProduct(Map<String, List<PurchaseOrder>> purchaseOrderMap) {
+
+		Map<String, Integer> resultMap = new HashMap<>();
+		for (List<PurchaseOrder> list : purchaseOrderMap.values()) {
+			int count = 0;
+			for (PurchaseOrder po : list) {
+				count += po.getQuantity();
+			}
+			resultMap.put(list.get(0).getProduct().getProductName(), count);
+		}
+		return resultMap;
+	}
+
+	private Map<String, List<PurchaseOrder>> groupPurchaseOrderByProduct(List<PurchaseOrder> purchaseOrderList) {
+		Map<String, List<PurchaseOrder>> purchaseOrderMap = new HashMap<>();
+		for (PurchaseOrder purchaseOrder : purchaseOrderList) {
+			List<PurchaseOrder> list = purchaseOrderMap.get(purchaseOrder.getProduct().getBoId());
+			if (list == null) {
+				list = new ArrayList<>();
+				purchaseOrderMap.put(purchaseOrder.getProduct().getBoId(), list);
+			}
+			list.add(purchaseOrder);
+		}
+		return purchaseOrderMap;
 	}
 
 }

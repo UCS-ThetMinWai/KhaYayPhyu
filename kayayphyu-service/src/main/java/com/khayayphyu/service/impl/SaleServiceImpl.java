@@ -42,7 +42,7 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 		if (CollectionUtils.isEmpty(sale.getSaleOrderList()))
 			return;
 		for (SaleOrder saleOrder : sale.getSaleOrderList()) {
-			if (saleOrder.isBoIdRequired()) {
+			if (saleOrder.isNew()) {
 				saleOrder.setBoId(saleOrderService.getNextBoId(EntityType.SALEORDER));
 			}
 		}
@@ -51,7 +51,7 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 	@Transactional(readOnly = false)
 	@Override
 	public void saveSale(Sale sale) throws ServiceUnavailableException {
-		if (sale.isBoIdRequired()) {
+		if (sale.isNew()) {
 			sale.setBoId(getNextBoId(EntityType.SALE));
 			sale.setStatus(Status.OPEN);
 			ensuredSaleBoId(sale);

@@ -1,6 +1,5 @@
 package com.khayayphyu.resource.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +42,6 @@ public class ProductServiceResourceImpl extends AbstractServiceResourceImpl impl
 	}
 
 	private boolean updateProduct(Product product) {
-		logger.info("here" + product.getBoId());
 		itemService.removeItemListOf(product);
 		return save(product);
 	}

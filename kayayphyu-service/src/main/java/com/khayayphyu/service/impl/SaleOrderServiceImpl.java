@@ -97,4 +97,12 @@ public class SaleOrderServiceImpl extends AbstractServiceImpl<SaleOrder> impleme
 		productService.hibernateInitializeProduct(saleOrder.getProduct());
 	}
 
+	@Transactional(readOnly = false)
+	@Override
+	public void removeSaleOrderListOf(Sale sale)throws ServiceUnavailableException {
+		List<SaleOrder> saleOrderList = saleOrderDao.findByStringWithoutStatus("from SaleOrder saleOrder where saleOrder.sale=:dataInput", sale);
+		for(SaleOrder saleOrder : saleOrderList) {
+			saleOrderDao.delete(saleOrder);
+		}
+	}
 }

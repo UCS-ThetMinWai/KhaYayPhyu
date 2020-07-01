@@ -100,5 +100,14 @@ public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder>
 		}	
 		productService.hibernateInitializeProduct(purchaseOrder.getProduct());
 	}
+	
+	@Transactional(readOnly = false)
+	@Override
+	public void removePurchaseOrderListOf(Purchase purchase)throws ServiceUnavailableException {
+		List<PurchaseOrder> purchaseOrderList = purchaseOrderDao.findByStringWithoutStatus("from PurchaseOrder purchaseOrder where purchaseOrder.parent=:dataInput", purchase);
+		for(PurchaseOrder purchaseOrder : purchaseOrderList) {
+			purchaseOrderDao.delete(purchaseOrder);
+		}
+	}
 
 }

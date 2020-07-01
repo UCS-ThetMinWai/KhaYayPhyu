@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.khayayphyu.dao.PurchasePriceDao;
+import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.PurchasePrice;
 import com.khayayphyu.domain.constant.Status;
 import com.khayayphyu.domain.constant.SystemConstant;
@@ -54,6 +55,16 @@ public class PurchasePriceServiceImpl extends AbstractServiceImpl<PurchasePrice>
 	@Override
 	public long getCount() {
 		return purchasePriceDao.getCount("select count(price) from PurchasePrice price");
+	}
+	
+	@Override
+	public PurchasePrice findByProduct(Product product) throws ServiceUnavailableException {
+		String queryStr = "from Product product where product.boId=:dataInput";
+		//priceDao.findByString(queryStr);
+		String test = "select p.purchasePrice from Product p where p.boId=:dataInput and p.status!=:status";
+		//String test ="from SalePrice sp join Product p.id where p.boId=:dataInput and sp.status != :status";
+		List<PurchasePrice> purchasePriceList = purchasePriceDao.findByString(test, product.getBoId());
+		return purchasePriceList.get(0);
 	}
 
 }

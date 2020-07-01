@@ -22,6 +22,10 @@ public class PurchaseOrder extends AbstractEntity {
 	@Column(name = "price")
 	@JsonView(SummaryView.class)
 	private int price;
+	
+	@Column(name = "amount")
+	@JsonView(SummaryView.class)
+	private int amount;
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -78,6 +82,14 @@ public class PurchaseOrder extends AbstractEntity {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
 	}
 
 	public Purchase getPurchase() {

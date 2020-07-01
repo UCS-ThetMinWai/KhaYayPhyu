@@ -9,10 +9,10 @@ import com.khayayphyu.domain.Sale;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 
 public interface SaleServiceResource {
-	boolean createSale(Sale json) throws ServiceUnavailableException;
 	boolean deleteSale(String boId) throws ServiceUnavailableException;
 	Sale findBySaleBoId(HttpServletRequest request, String boId)throws ServiceUnavailableException;
 	List<Sale> findByName(HttpServletRequest request, String name)throws ServiceUnavailableException;
 	List<Sale> findByPeriod(HttpServletRequest request, Date startDate, Date endDate)throws ServiceUnavailableException;
 	List<Sale> getAllSale(HttpServletRequest request)throws ServiceUnavailableException;
+	public boolean create(Sale sale)throws ServiceUnavailableException;
 }
