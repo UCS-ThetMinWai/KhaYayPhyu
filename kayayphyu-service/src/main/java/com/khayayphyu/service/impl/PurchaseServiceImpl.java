@@ -86,8 +86,6 @@ public class PurchaseServiceImpl extends AbstractServiceImpl<Purchase> implement
 
 			}
 			product.setQuantity(product.getQuantity() + purchaseOrder.getQuantity());
-			if (product.getQuantity() < 0)
-				return false;
 			productList.add(product);
 		}
 		return productService.save(productList);

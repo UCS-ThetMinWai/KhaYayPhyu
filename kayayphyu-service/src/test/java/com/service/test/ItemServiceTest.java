@@ -3,6 +3,7 @@ package com.service.test;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class ItemServiceTest extends ServiceTest {
 
 	private static Logger logger = Logger.getLogger(ItemServiceTest.class);
 
+	@Ignore
 	@Test
 	public void updateTest() throws Exception {
 		logger.info("here");

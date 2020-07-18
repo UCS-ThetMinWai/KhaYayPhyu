@@ -50,7 +50,7 @@ public class PurchaseOrderServiceResourceImpl extends AbstractServiceResourceImp
 		return purchaseOrderService.findByPeriod(startDate, endDate);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/list")
+	@RequestMapping(method = RequestMethod.GET, value = "")
 	@Override
 	public List<PurchaseOrder> getAllPurchaseOrder(HttpServletRequest request) throws ServiceUnavailableException {
 		return purchaseOrderService.getAllPurchaseOrder();

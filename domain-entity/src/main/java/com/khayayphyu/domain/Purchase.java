@@ -15,18 +15,16 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.khayayphyu.domain.jsonviews.DetailView;
 import com.khayayphyu.domain.jsonviews.SummaryView;
 import com.khayayphyu.domain.jsonviews.Views;
-import com.khayayphyu.domain.jsonviews.Views.Comprehensive;
 
 @Entity
 @Table(name = "purchase")
 public class Purchase extends AbstractEntity {
 
-	@JsonView(Comprehensive.class)
+	@JsonView(Views.Comprehensive.class)
 	@OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	List<PurchaseOrder> purchaseOrderList;
 

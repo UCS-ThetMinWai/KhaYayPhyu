@@ -49,8 +49,8 @@ public class SaleServiceResourceImpl extends AbstractServiceResourceImpl impleme
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@Override
 	public boolean create(@RequestBody Sale sale) throws ServiceUnavailableException {
-		sale.setSaleOrderList(removeDupliateSaleOrder(sale.getSaleOrderList()));
 		updatePriceToSaleOrder(sale.getSaleOrderList().get(0));
+		sale.setSaleOrderList(removeDupliateSaleOrder(sale.getSaleOrderList()));
 		return sale.isNew()? save(sale):updateSale(sale);
 	}
 	

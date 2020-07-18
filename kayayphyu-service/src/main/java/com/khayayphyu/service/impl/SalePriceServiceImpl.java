@@ -61,11 +61,8 @@ public class SalePriceServiceImpl extends AbstractServiceImpl<SalePrice> impleme
 
 	@Override
 	public SalePrice findByProduct(Product product) throws ServiceUnavailableException {
-		String queryStr = "from Product product where product.boId=:dataInput";
-		//priceDao.findByString(queryStr);
-		String test = "select p.salePrice from Product p where p.boId=:dataInput and p.status!=:status";
-		//String test ="from SalePrice sp join Product p.id where p.boId=:dataInput and sp.status != :status";
-		List<SalePrice> salePriceList = priceDao.findByString(test, product.getBoId());
+		String queryStr = "select p.salePrice from Product p where p.boId=:dataInput and p.status!=:status";
+		List<SalePrice> salePriceList = priceDao.findByString(queryStr, product.getBoId());
 		logger.info("BoId: " + product.getBoId());
 		return salePriceList.get(0);
 	}

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -35,7 +36,7 @@ import com.khayayphyu.service.impl.PurchaseServiceImpl;
 @RestController
 @RequestMapping(value = { "/purchase" })
 public class PurchaseServiceResourceImpl extends AbstractServiceResourceImpl implements PurchaseServiceResource {
-
+	Logger logger = Logger.getLogger(PurchaseServiceResourceImpl.class);
 	@Autowired
 	private PurchaseService purchaseService;
 	
@@ -48,8 +49,10 @@ public class PurchaseServiceResourceImpl extends AbstractServiceResourceImpl imp
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@Override
 	public Boolean createPurchase(HttpServletRequest request, @RequestBody Purchase purchase)throws ServiceUnavailableException {
-		removeDupliatePurchaseOrder(purchase.getPurchaseOrderList());
+		logger.info(purchase.getCustomer().getId());
+		logger.info(purchase.getPurchaseOrderList().size());
 		updatePriceToPurchaseOrder(purchase.getPurchaseOrderList().get(0));
+		purchase.setPurchaseOrderList(removeDupliatePurchaseOrder(purchase.getPurchaseOrderList()));
 		return purchase.isNew() ? save(purchase):updatePurchase(purchase);
 	}
 	

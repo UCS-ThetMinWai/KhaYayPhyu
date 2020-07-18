@@ -45,7 +45,7 @@ public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder>
 	@Transactional(readOnly = false)
 	@Override
 	public void savePurchaseOrder(PurchaseOrder purchaseOrder) throws ServiceUnavailableException {
-		if(purchaseOrder.isBoIdRequired()) {
+		if(purchaseOrder.isNew()) {
 			purchaseOrder.setBoId(getNextBoId(EntityType.PURCHASEORDER));
 			ensurePurchaseOrderBoId(purchaseOrder);
 		}
@@ -104,7 +104,7 @@ public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder>
 	@Transactional(readOnly = false)
 	@Override
 	public void removePurchaseOrderListOf(Purchase purchase)throws ServiceUnavailableException {
-		List<PurchaseOrder> purchaseOrderList = purchaseOrderDao.findByStringWithoutStatus("from PurchaseOrder purchaseOrder where purchaseOrder.parent=:dataInput", purchase);
+		List<PurchaseOrder> purchaseOrderList = purchaseOrderDao.findByStringWithoutStatus("from PurchaseOrder purchaseOrder where purchaseOrder.purchase = :dataInput", purchase);
 		for(PurchaseOrder purchaseOrder : purchaseOrderList) {
 			purchaseOrderDao.delete(purchaseOrder);
 		}

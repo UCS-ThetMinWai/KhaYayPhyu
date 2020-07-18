@@ -3,6 +3,7 @@ package com.service.test;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,6 +19,7 @@ public class CustomerServiceTest extends ServiceTest {
 	@Autowired
 	private CustomerService customerService;
 	
+	@Ignore
 	@Test
 	public void testSaveCustomer() {
 		Customer customer = new Customer();
@@ -33,6 +35,7 @@ public class CustomerServiceTest extends ServiceTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testFindByCustomerName() {
 		try {
@@ -48,6 +51,7 @@ public class CustomerServiceTest extends ServiceTest {
 		}
 	}
 	
+	@Ignore
 	@Test
 	public void testFindByBoId() {
 		try {

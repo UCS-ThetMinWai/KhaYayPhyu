@@ -33,14 +33,10 @@ public class SaleOrderServiceImpl extends AbstractServiceImpl<SaleOrder> impleme
 	private ProductService productService;
 
 	public void ensuredSaleOrderBoId(SaleOrder saleOrder) {
-		if (saleOrder.getProduct() == null)
+		if (saleOrder.getProduct() == null || saleOrder.getSale() == null)
 			return;
 		Product product = saleOrder.getProduct();
 		product.setBoId(productService.getNextBoId(EntityType.PRODUCT));
-
-		if (saleOrder.getSale() == null) {
-			return;
-		}
 
 		Sale sale = saleOrder.getSale();
 		sale.setBoId(saleService.getNextBoId(EntityType.SALE));
@@ -105,4 +101,10 @@ public class SaleOrderServiceImpl extends AbstractServiceImpl<SaleOrder> impleme
 			saleOrderDao.delete(saleOrder);
 		}
 	}
+	
+//	public boolean isSaleOrderNull(SaleOrder saleOrder) {
+//		if (saleOrder == null)
+//			return true;
+//		return false;
+//	}
 }
