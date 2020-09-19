@@ -14,5 +14,5 @@ public interface SaleServiceResource {
 	List<Sale> findByName(HttpServletRequest request, String name)throws ServiceUnavailableException;
 	List<Sale> findByPeriod(HttpServletRequest request, Date startDate, Date endDate)throws ServiceUnavailableException;
 	List<Sale> getAllSale(HttpServletRequest request)throws ServiceUnavailableException;
-	public boolean create(Sale sale)throws ServiceUnavailableException;
+	public String create(Sale sale)throws Exception;
 }

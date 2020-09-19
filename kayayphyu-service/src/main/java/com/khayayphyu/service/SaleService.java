@@ -13,17 +13,34 @@ import com.khayayphyu.domain.SaleOrder;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 
 public interface SaleService extends AbstractService<Sale> {
+	public enum ServiceStatus{
+		OUT_OF_STOCK, SUCCESS, OTHERS;
+		
+		public boolean isSuccess() {
+			return this == SUCCESS;
+		}
+		
+		public boolean isOutOfStock() {
+			return this == OUT_OF_STOCK;
+		}
+		
+		public boolean isOthers() {
+			return this == OTHERS;
+		}
+	}
 	public List<Sale> findByPeriod(Date stratDate, Date endDate) throws ServiceUnavailableException;
 
 	public List<Sale> getAllSale() throws ServiceUnavailableException;
 
 	public void saveSale(Sale sale) throws ServiceUnavailableException;
 	
-	public boolean syncWithDb(Sale sale);
+	public ServiceStatus syncWithDb(Sale sale);
 
 	public Map<String, Integer> monthlySaleReport(Date startDate, Date endDate) throws ServiceUnavailableException;
 
 	public void deleteSale(Sale sale) throws ServiceUnavailableException;
+	
+	public ServiceStatus validate(Sale sale) throws Exception;
 
 	default void detailInitializer(Sale sale) {
 		Hibernate.initialize(sale.getSaleBy());

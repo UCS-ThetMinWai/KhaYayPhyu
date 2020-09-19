@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,33 +46,38 @@ public class SaleServiceResourceImpl extends AbstractServiceResourceImpl impleme
 	
 	@Autowired
 	private SalePriceService salePriceService;
+	
+	@Autowired
+	private Environment envirotnment;
 
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@Override
-	public boolean create(@RequestBody Sale sale) throws ServiceUnavailableException {
+	public String create(@RequestBody Sale sale) throws Exception {
 		updatePriceToSaleOrder(sale.getSaleOrderList().get(0));
 		sale.setSaleOrderList(removeDupliateSaleOrder(sale.getSaleOrderList()));
-		return sale.isNew()? save(sale):updateSale(sale);
+		SaleService.ServiceStatus  resultStatus = sale.isNew()? save(sale):updateSale(sale);
+		return envirotnment.getProperty(resultStatus.name());
 	}
 	
-	private boolean updateSale(Sale sale)throws ServiceUnavailableException {
+	private SaleService.ServiceStatus updateSale(Sale sale)throws Exception {
 		saleOrderService.removeSaleOrderListOf(sale);
 		return save(sale);
 	}
 
-	private boolean save(Sale sale) {
+	private SaleService.ServiceStatus save(Sale sale)throws Exception {
 		sale.getSaleOrderList().forEach(saleOrder -> resetSaleOrder(saleOrder, sale));
 		try {
-			sale.getSaleOrderList().forEach(so -> so.setSale(sale));
-			if (!saleService.syncWithDb(sale)) {
-				return false;
+//			sale.getSaleOrderList().forEach(so -> so.setSale(sale));
+			SaleService.ServiceStatus status = saleService.validate(sale);
+			if (status.isOutOfStock()) {
+				return SaleService.ServiceStatus.OUT_OF_STOCK;
 			}
 			saleService.saveSale(sale);
 		} catch (ServiceUnavailableException e) {
 			logger.error("Can't save sale", e);
-			return false;
+			return SaleService.ServiceStatus.OTHERS;
 		}
-		return true;
+		return SaleService.ServiceStatus.SUCCESS;
 	}
 
 	private void resetSaleOrder(SaleOrder itsaleOrder, Sale parent) {
@@ -82,10 +88,9 @@ public class SaleServiceResourceImpl extends AbstractServiceResourceImpl impleme
 
 
 	private void updatePriceToSaleOrder(SaleOrder saleOrder){
-		SalePrice salePrice;
 		
 		try {
-			salePrice = salePriceService.findByProduct(saleOrder.getProduct());
+			SalePrice salePrice = salePriceService.findByProduct(saleOrder.getProduct());
 			saleOrder.setPrice(salePrice.getAmount());
 			saleOrder.setAmount(saleOrder.getPrice() * saleOrder.getQuantity());
 		} catch (ServiceUnavailableException e) {
@@ -131,6 +136,7 @@ public class SaleServiceResourceImpl extends AbstractServiceResourceImpl impleme
 	@RequestMapping(method = RequestMethod.GET, value = "/{boId}")
 	public Sale findBySaleBoId(HttpServletRequest request, @PathVariable String boId)
 			throws ServiceUnavailableException {
+		logger.info(boId);
 		return saleService.findByBoId(boId, saleService::detailInitializer);
 	}
 

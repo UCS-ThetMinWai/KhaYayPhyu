@@ -58,6 +58,26 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 		}
 		saleDao.save(sale);
 	}
+	
+	private boolean isOutOfStock(Sale sale)throws Exception {
+		if(CollectionUtils.isEmpty(sale.getSaleOrderList())) 
+			return false;
+		for(SaleOrder saleOrder : sale.getSaleOrderList()) {
+			Product product = saleOrder.getProduct();
+			Product dbProduct = productService.findByBoId(product.getBoId());
+			if(dbProduct.getQuantity() < saleOrder.getQuantity())
+				return true;
+		}
+			return false;
+	}
+	
+	public SaleService.ServiceStatus validate(Sale sale)throws Exception {
+		
+		if(isOutOfStock(sale)) {
+			return SaleService.ServiceStatus.OUT_OF_STOCK;
+		}
+		return SaleService.ServiceStatus.SUCCESS;
+	}
 
 	@Override
 	public List<Sale> findByName(String name) throws ServiceUnavailableException {
@@ -81,7 +101,7 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 		if (CollectionUtils.isEmpty(saleList))
 			return null;
 		Sale sale = saleList.get(0);
-		initializer.accept(sale);
+		initializer.accept(sale);;
 		return sale;
 	}
 
@@ -103,7 +123,7 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 	}
 
 	@Transactional(readOnly = false)
-	public boolean syncWithDb(Sale sale) {
+	public SaleService.ServiceStatus syncWithDb(Sale sale) {
 		List<Product> productList = new ArrayList<>();
 		for (SaleOrder saleOrder : sale.getSaleOrderList()) {
 			Product product = saleOrder.getProduct();
@@ -114,10 +134,10 @@ public class SaleServiceImpl extends AbstractServiceImpl<Sale> implements SaleSe
 			}
 			product.setQuantity(product.getQuantity() - saleOrder.getQuantity());
 			if (product.getQuantity() < 0)
-				return false;
+				return SaleService.ServiceStatus.OUT_OF_STOCK;
 			productList.add(product);
 		}
-		return productService.save(productList);
+		return productService.save(productList) ? SaleService.ServiceStatus.SUCCESS : SaleService.ServiceStatus.OTHERS;
 	}
 
 	@Transactional(readOnly = false)
