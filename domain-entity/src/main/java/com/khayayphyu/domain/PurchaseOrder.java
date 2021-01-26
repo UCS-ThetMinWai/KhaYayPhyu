@@ -46,6 +46,7 @@ public class PurchaseOrder extends AbstractEntity {
 
 	public PurchaseOrder() {
 		super();
+		setBoId("PRCHSOR-" + System.nanoTime());
 	}
 
 	public PurchaseOrder(String boId) {

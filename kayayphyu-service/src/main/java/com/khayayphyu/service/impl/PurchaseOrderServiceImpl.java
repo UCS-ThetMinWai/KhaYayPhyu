@@ -4,20 +4,17 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.khayayphyu.dao.PurchaseOrderDao;
-import com.khayayphyu.domain.Product;
 import com.khayayphyu.domain.Purchase;
 import com.khayayphyu.domain.PurchaseOrder;
 import com.khayayphyu.domain.constant.SystemConstant.EntityType;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.ProductService;
 import com.khayayphyu.service.PurchaseOrderService;
-import com.khayayphyu.service.PurchaseService;
 @Service("purchaseOrderService")
 @Transactional(readOnly = true)
 public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder> implements PurchaseOrderService {
@@ -26,28 +23,13 @@ public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder>
 	private ProductService productService;
 	
 	@Autowired
-	private PurchaseService purchaseService;
-	
-	@Autowired
 	private PurchaseOrderDao purchaseOrderDao;
-	
-	public void ensurePurchaseOrderBoId(PurchaseOrder purchaseOrder) {
-		if(purchaseOrder.getProduct() == null || purchaseOrder.getPurchase() == null) {
-			return;
-		}
-		Product product = purchaseOrder.getProduct();
-		product.setBoId(productService.getNextBoId(EntityType.PRODUCT));
-		
-		Purchase purchase = purchaseOrder.getPurchase();
-		purchase.setBoId(purchaseService.getNextBoId(EntityType.PURCHASE));
-	}
 
 	@Transactional(readOnly = false)
 	@Override
 	public void savePurchaseOrder(PurchaseOrder purchaseOrder) throws ServiceUnavailableException {
 		if(purchaseOrder.isNew()) {
 			purchaseOrder.setBoId(getNextBoId(EntityType.PURCHASEORDER));
-			ensurePurchaseOrderBoId(purchaseOrder);
 		}
 		purchaseOrderDao.save(purchaseOrder);
 	}
@@ -83,18 +65,11 @@ public class PurchaseOrderServiceImpl extends AbstractServiceImpl<PurchaseOrder>
 
 	@Override
 	public void hibernateInitializePurchaseOrderList(List<PurchaseOrder> purchaseOrderList) {
-		Hibernate.initialize(purchaseOrderList);
-		if (CollectionUtils.isEmpty(purchaseOrderList))
-			return;
-
-		for (PurchaseOrder purchaseOrder : purchaseOrderList) {
-			hibernateInitializePurchaseOrder(purchaseOrder);
-		}
+		purchaseOrderList.forEach(this::hibernateInitializePurchaseOrder);
 	}
 
 	@Override
 	public void hibernateInitializePurchaseOrder(PurchaseOrder purchaseOrder) {
-		Hibernate.initialize(purchaseOrder);
 		if(purchaseOrder == null) {
 			return;
 		}	

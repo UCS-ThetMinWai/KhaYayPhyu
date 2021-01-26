@@ -12,7 +12,6 @@ import com.khayayphyu.domain.Customer;
 import com.khayayphyu.domain.Sale;
 import com.khayayphyu.domain.SaleOrder;
 import com.khayayphyu.domain.User;
-import com.khayayphyu.domain.constant.PackingType;
 import com.khayayphyu.domain.constant.SystemConstant;
 import com.khayayphyu.domain.exception.ServiceUnavailableException;
 import com.khayayphyu.service.SaleService;
@@ -53,6 +52,7 @@ public class SaleServiceTest extends ServiceTest {
 		try {
 			saleService.saveSale(sale);
 			logger.info("balance " + sale.getBalance());
+			logger.info(sale.getPayAmount());
 			logger.info("save!");
 		} catch (ServiceUnavailableException e) {
 			e.printStackTrace();

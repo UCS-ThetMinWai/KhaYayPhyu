@@ -1,6 +1,7 @@
 package com.khayayphyu.dao.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -103,12 +104,10 @@ public class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E
 
 	@Override
 	public List<E> findByDate(String queryString, Date startDate, Date endDate) {
-		List<E> entityList;
+		//List<E> entityList;
 		Query query = getCurrentSession().createQuery(queryString).setParameter("dataInput", startDate).setParameter("dataInput1", endDate);
-		entityList = query.list();
-		for (E entity : entityList)
-			Hibernate.initialize(entity);
-		return entityList;
+		List<E> entityList = query.list();
+		return entityList == null ? new ArrayList<>() : entityList;
 	}
 
 	public long getCount(String queryString) {
